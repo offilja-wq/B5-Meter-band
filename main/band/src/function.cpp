@@ -6,6 +6,15 @@
 
 #include "config.h"
 
-void NTC_READ() {}
 
-void PRESSURE_READ() {}
+int READ_NTC() {
+    //NTC_SENSOR_PIN
+    
+    return; //data
+}
+
+int READ_PRESSURE() {
+    //PRESSURE_SENSOR_PIN
+    
+    return; //data
+}

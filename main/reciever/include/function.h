@@ -2,4 +2,4 @@
 
 //function prototypes
 
-void updateDisplay(STATE);
+void updateDisplay(int STATE);

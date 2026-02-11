@@ -6,7 +6,9 @@
 
 #include "config.h"
 
-void updateDisplay(STATE) {}
+void updateDisplay(int STATE) {
+
+}
 
 
 

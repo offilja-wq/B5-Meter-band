@@ -2,6 +2,6 @@
 
 //function prototypes
 
-void NTC_READ();
+int NTC_READ();
 
-void PRESSURE_READ();
+int PRESSURE_READ();
