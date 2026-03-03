@@ -3,3 +3,28 @@
 /* pose */
 #define NTC_SENSOR_PIN A0
 #define PRESSURE_SENSOR_PIN A1
+
+typedef enum : uint8_t 
+{
+    NTC_DEAD_HIGH,
+    NTC_DANGEROUS,
+    NTC_TOO_HIGH,
+    NTC_NORMAL,
+    TOO_LOW,
+    NO_SKIN_CONTACT,
+    NO_REALISTIC_DATA
+} NTC_TYPE;
+
+typedef enum : uint8_t 
+{
+    PRESSURE_BREATH_IN,
+    PRESSURE_BREATH_OUT,
+    PRESSURE_NO_SKIN_CONTACT,
+    PRESSURE_NO_REALISTIC_DATA
+} PRESSURE_TYPE;
+
+struct Sensors
+{
+    NTC_TYPE RESULT_NTC;
+    PRESSURE_TYPE RESULT_PRESSURE;
+};
