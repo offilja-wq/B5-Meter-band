@@ -2,8 +2,8 @@
 
 //function prototypes
 
-int NTC_READ();
+int READ_NTC();
 
-int PRESSURE_READ();
+int READ_PRESSURE();
 
 void printMacAddress();

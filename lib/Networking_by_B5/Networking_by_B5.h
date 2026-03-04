@@ -11,22 +11,22 @@
 #include "utils.h"
 
 const uint8_t NETWORK_CHANNEL = 2;
-const uint8_t BROADCAST_ADDRESS[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}; //Adress van de reciever
+const uint8_t BROADCAST_ADDRESS[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
-typedef enum : uint8_t //Geeft "IdentityType" de optie om 'statussen' te hebben.
+typedef enum : uint8_t
 {
-    IDENTITY_BAND,
     IDENTITY_RECIEVER,
+    IDENTITY_BAND,
     IDENTITY_OBSERVER
 } IdentityType;
 
-typedef struct //Verander types in Identity.[name]
+
+typedef struct
 {
-    uint8_t id; //New
     IdentityType type;
 } Identity;
 
-typedef enum : uint8_t //Interne esp commands
+typedef enum : uint8_t
 {
     COMMAND_PING = 0x00,
     COMMAND_INPUT = 0x01,
@@ -43,20 +43,17 @@ typedef struct
 {
     Identity identity;
 
-    int16_t NTC_RAW_DATA;
-    int16_t PRESSURE_RAW_DATA;
-
     CommandType command;
-    uint8_t data[16]; //Inhoud
+    uint8_t data[16];
 } Packet;
 
-typedef struct //Data holders
+typedef struct
 {
     int16_t NTC_RAW_DATA;
     int16_t PRESSURE_RAW_DATA;
 } InputData;
 
-// Pakketten filter
+// Callback type voor het ontvangen van pakketten
 typedef void (*ReceiveCallback)(const uint8_t *mac, const Packet *packet);
 
 class Networking
@@ -67,8 +64,6 @@ public:
     void begin(); // Initialiseer networking
     void setIdentity(Identity identity);
     Identity getIdentity();
-
-    State state;
 
     void handle();
     void handlePing();

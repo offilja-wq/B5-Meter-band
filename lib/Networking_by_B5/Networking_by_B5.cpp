@@ -13,12 +13,11 @@ void Networking::begin()
     WiFi.mode(WIFI_STA);
     esp_wifi_set_channel(NETWORK_CHANNEL, WIFI_SECOND_CHAN_NONE);
 
-#if WIFI_DISABLE_POWER_SAVE 
-    esp_bt_controller_disable();
-    WiFi.setSleep(false); //Wifi sleepmode uit
+#if WIFI_DISABLE_POWER_SAVE
+    WiFi.setSleep(false);
 #endif
 
-    if (esp_now_init() != ESP_OK) 
+    if (esp_now_init() != ESP_OK)
     {
         ESP_LOGE(TAG, "Error initializing ESP-NOW");
         return;
@@ -56,8 +55,6 @@ Identity Networking::getIdentity()
 
 void Networking::send(Packet *packet)
 {
-    memcpy(&packet->state, &this->state, sizeof(State));
-
     esp_now_send(BROADCAST_ADDRESS, (uint8_t *)packet, sizeof(Packet));
 
 #if NETWORKING_DEBUG
@@ -105,9 +102,6 @@ void Networking::handleReceive(const uint8_t *mac, const uint8_t *data, int len)
 
 void Networking::receiveInternal(const uint8_t *mac, const Packet *packet)
 {
-    // if (packet->identity.type == IDENTITY_RECIEVER &&
-    //     memcmp(mac, this->mac, sizeof(this->mac)) != 0)
-
     switch (packet->command)
     {
     case COMMAND_RESTART:
@@ -118,7 +112,6 @@ void Networking::receiveInternal(const uint8_t *mac, const Packet *packet)
         }
         break;
     case COMMAND_RESET:
-        memset(&this->state, 0, sizeof(this->state));
         break;
     }
 }
@@ -221,8 +214,6 @@ void Networking::monitorPacket(const uint8_t *mac, const Packet *packet)
     Serial.print(";");
     Serial.print(packetToString(&packet->identity, sizeof(packet->identity)));
     Serial.print(";");
-    Serial.print(packetToString(&packet->state, sizeof(packet->state)));
-    Serial.print(";");
     Serial.print(packetToString(&packet->command, sizeof(packet->command)));
     Serial.print(";");
     Serial.println(packetToString(&packet->data, sizeof(packet->data)));
@@ -235,10 +226,8 @@ void printPacket(const uint8_t *mac, const Packet *packet)
     Serial.print("Received packet from: ");
     Serial.println(macToString(mac));
 
-    Serial.print("Identity ID: ");
-    Serial.println(packet->identity.id);
     Serial.print("Identity Type: ");
-    Serial.println(packet->identity.type == IDENTITY_BAND ? "BAND" : "RECIEVER");
+    Serial.println(packet->identity.type == IDENTITY_RECIEVER ? "RECIEVER" : "BAND");
     Serial.print("Command: ");
     Serial.println(packet->command);
     Serial.print("Data: ");
