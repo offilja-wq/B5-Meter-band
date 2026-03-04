@@ -1,15 +1,14 @@
-#include "Arduino.h"
+/*
+    ESP-NOW Broadcast Slave
+    Lucas Saavedra Vaz - 2024
 
-// #include "config.h"
-// #include "function.h"
+    This sketch demonstrates how to receive broadcast messages from a master device using the ESP-NOW protocol.
 
-// void setup() {
-//   Serial.begin(115200);
-// }
+    The master device will broadcast a message every 5 seconds to all devices within the network.
 
-// void loop() {
-//     updateDisplay(1);
-// }
+    The slave devices will receive the broadcasted messages. If they are not from a known master, they will be registered as a new master
+    using a callback function.
+*/
 
 #include "ESP32_NOW.h"
 #include "WiFi.h"

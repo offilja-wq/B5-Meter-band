@@ -1,34 +1,15 @@
-#include "Arduino.h"
+/*
+    ESP-NOW Broadcast Master
+    Lucas Saavedra Vaz - 2024
 
-// #include "config.h"
-// #include "function.h"
-// #include "Networking_by_B5.h"
+    This sketch demonstrates how to broadcast messages to all devices within the ESP-NOW network.
+    This example is intended to be used with the ESP-NOW Broadcast Slave example.
 
-// #include <WiFi.h>
-#include <esp_wifi.h>
-// #include "esp_bt.h"
-// #include "esp_now.h"
+    The master device will broadcast a message every 5 seconds to all devices within the network.
+    This will be done using by registering a peer object with the broadcast address.
 
-
-// void setup() {
-//   Serial.begin(115200);
-//   Serial.setDebugOutput(true);
-
-//   identity.type = IDENTITY_BAND;
-
-
-//   WiFi.begin();
-
-//   Serial.print("[DEFAULT] ESP32 Board MAC Address: ");
-
-// }
-
-// void loop() {
-//     //printMacAddress();
-//     network.handle();
-// }
-
-
+    The slave devices will receive the broadcasted messages and print them to the Serial Monitor.
+*/
 
 #include "ESP32_NOW.h"
 #include "WiFi.h"
@@ -120,5 +101,6 @@ void loop() {
   if (!broadcast_peer.send_message((uint8_t *)data, sizeof(data))) {
     Serial.println("Failed to broadcast message");
   }
+
   delay(5000);
 }
