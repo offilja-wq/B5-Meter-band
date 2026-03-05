@@ -66,7 +66,7 @@ void Networking::acknowledge()
 {
     static Packet packet = {
         .identity = this->identity,
-        .command = COMMAND_ACK};
+    };
 
     this->send(&packet);
 }
@@ -102,18 +102,18 @@ void Networking::handleReceive(const uint8_t *mac, const uint8_t *data, int len)
 
 void Networking::receiveInternal(const uint8_t *mac, const Packet *packet)
 {
-    switch (packet->command)
-    {
-    case COMMAND_RESTART:
-        if (memcmp(packet->data, this->mac, sizeof(this->mac)) == 0)
-        {
-            ESP_LOGI(TAG, "Received restart command");
-            esp_restart();
-        }
-        break;
-    case COMMAND_RESET:
-        break;
-    }
+    // switch ()
+    // {
+    // case COMMAND_RESTART:
+    //     if (memcmp(packet->data, this->mac, sizeof(this->mac)) == 0)
+    //     {
+    //         ESP_LOGI(TAG, "Received restart command");
+    //         esp_restart();
+    //     }
+    //     break;
+    // case COMMAND_RESET:
+    //     break;
+    // }
 }
 
 void Networking::handle()
@@ -137,10 +137,10 @@ void Networking::handle()
             case COMMAND_RESTART:
             case COMMAND_PAIR_CONTROLLER:
             {
-                Packet packet = {
-                    .identity = this->identity,
-                    .command = (CommandType)buf[0],
-                };
+                // Packet packet = {
+                //     .identity = this->identity,
+                //     .command = (CommandType)buf[0],
+                // };
 
                 stringToMac(&buf[1], packet.data);
 
@@ -158,10 +158,10 @@ void Networking::handle()
             }
             case COMMAND_RESET:
             {
-                static Packet packet = {
-                    .identity = this->identity,
-                    .command = (CommandType)buf[0],
-                };
+                // static Packet packet = {
+                //     .identity = this->identity,
+                //     .command = (CommandType)buf[0],
+                // };
 
                 this->send(&packet);
                 this->receiveInternal(this->mac, &packet);
@@ -191,7 +191,7 @@ void Networking::handlePing()
 
     static Packet packet = {
         .identity = this->identity,
-        .command = COMMAND_PING};
+    };
 
     unsigned long now = millis();
 
@@ -212,10 +212,6 @@ void Networking::monitorPacket(const uint8_t *mac, const Packet *packet)
     Serial.print("nwdbg;");
     Serial.print(macToString(mac));
     Serial.print(";");
-    Serial.print(packetToString(&packet->identity, sizeof(packet->identity)));
-    Serial.print(";");
-    Serial.print(packetToString(&packet->command, sizeof(packet->command)));
-    Serial.print(";");
     Serial.println(packetToString(&packet->data, sizeof(packet->data)));
 }
 
@@ -225,11 +221,6 @@ void printPacket(const uint8_t *mac, const Packet *packet)
 
     Serial.print("Received packet from: ");
     Serial.println(macToString(mac));
-
-    Serial.print("Identity Type: ");
-    Serial.println(packet->identity.type == IDENTITY_RECIEVER ? "RECIEVER" : "BAND");
-    Serial.print("Command: ");
-    Serial.println(packet->command);
     Serial.print("Data: ");
     for (int i = 0; i < sizeof(packet->data); i++)
     {

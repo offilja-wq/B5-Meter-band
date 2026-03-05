@@ -26,7 +26,7 @@ void handleInput()
 
 	static Packet packet = {
 		.identity = network.getIdentity(),
-		.command = COMMAND_INPUT};
+	};
 
 	// Stel de input data in
 	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != NTC_NO_REALISTIC_DATA))

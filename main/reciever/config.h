@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Arduino.h>
+
 typedef struct //Data holders
 {
     int16_t NTC_RAW_DATA;

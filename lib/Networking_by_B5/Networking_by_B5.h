@@ -26,24 +26,24 @@ typedef struct
     IdentityType type;
 } Identity;
 
-typedef enum : uint8_t
-{
-    COMMAND_PING = 0x00,
-    COMMAND_INPUT = 0x01,
+// typedef enum : uint8_t
+// {
+//     COMMAND_PING = 0x00,
+//     COMMAND_INPUT = 0x01,
 
-    COMMAND_RESET = 0x03,
+//     COMMAND_RESET = 0x03,
 
-    COMMAND_RESTART = 0x10,
-    COMMAND_PAIR_CONTROLLER = 0x11,
+//     COMMAND_RESTART = 0x10,
+//     COMMAND_PAIR_CONTROLLER = 0x11,
 
-    COMMAND_ACK = 0xFF
-} CommandType;
+//     COMMAND_ACK = 0xFF
+// } CommandType;
 
 typedef struct
 {
     Identity identity;
 
-    CommandType command;
+    // CommandType command;
     uint8_t data[16];
 } Packet;
 
