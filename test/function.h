@@ -11,9 +11,11 @@ int READ_NTC();
 
 int READ_PRESSURE();
 
-// void printMacAddress();
 
 //RECIEVE
 void printInput(const InputData *input);
 
 void handleNetwork(const uint8_t *mac, const Packet *packet);
+
+//SEND
+void handleInput();

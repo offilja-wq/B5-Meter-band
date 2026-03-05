@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Arduino.h>
+
 #define NTC_SENSOR_PIN 34
 #define PRESSURE_SENSOR_PIN 35
 

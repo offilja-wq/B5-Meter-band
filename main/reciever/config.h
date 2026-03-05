@@ -17,7 +17,7 @@ typedef enum : uint8_t
     NTC_TOO_LOW,
     NTC_NO_SKIN_CONTACT,
     NTC_NO_REALISTIC_DATA
-} NTC_STATE;
+} NTC_RESULT;
 
 typedef enum : uint8_t 
 {
@@ -25,12 +25,12 @@ typedef enum : uint8_t
     PRESSURE_BREATH_OUT,
     PRESSURE_NO_SKIN_CONTACT,
     PRESSURE_NO_REALISTIC_DATA
-} PRESSURE_STATE;
+} PRESSURE_RESULT;
 
-struct Sensors
+struct SENSORS
 {
-    NTC_STATE RESULT_NTC;
-    PRESSURE_STATE RESULT_PRESSURE;
+    NTC_RESULT Ntc_result;
+    PRESSURE_RESULT Pressure_result;
 };
 
 typedef enum : uint8_t
