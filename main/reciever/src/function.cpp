@@ -18,7 +18,7 @@ Identity identity;
 unsigned long lastPacket;
 
 // Print de input pakketen uit ESP-now af
-void printInput(const InputData *input)
+void printInput(const Packet *input)
 {
 	unsigned long now = millis();
 
@@ -36,13 +36,15 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 	// {
 	// case COMMAND_INPUT:
 	// 	if (packet->identity.type == IDENTITY_BAND)
-	// 		printInput((InputData *)packet->data);
+	// 		printInput((Packet *)packet->data);
 
 	// 	break;
 	// default:
 	// 	printPacket(mac, packet);
 	// 	break;
 	// }
+    printPacket(mac, packet);
+
 	if (now - lastPacket >= 1000)
 	{
 		Serial.print("No connection/n");

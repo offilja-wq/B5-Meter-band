@@ -7,7 +7,7 @@
 // {
 //     int16_t NTC_RAW_DATA;
 //     int16_t PRESSURE_RAW_DATA;
-// } InputData2;
+// } Packet2;
 
 typedef enum : uint8_t 
 {
@@ -33,42 +33,6 @@ struct SENSORS
     NTC_RESULT Ntc_result;
     PRESSURE_RESULT Pressure_result;
 };
-
-typedef enum : uint8_t
-{
-    PACKAGETYPE_RETRANSMIT = 01,
-    PACKAGETYPE_DATA_SEND = 02,
-    PACKAGETYPE_COMMAND_RESET = 03,
-    PACKAGETYPE_CALL_STATE = 04,
-    PACKAGETYPE_CALL_ACKNOWLEDGE = 05
-
-} packageTypeCode;
-
-
-typedef enum : uint8_t {
-
-} packageFuction;
-
-
-
-
-
-typedef struct //Verander types in Package.[name]
-{
-    
-    uint8_t packageSize;
-    uint8_t sourceIdentity;
-    uint8_t destinationIdentity;
-    uint32_t packageCount;
-    uint8_t packageTypeCode;
-
-
-
-
-    bool priorityState;
-
-
-} Package;
 
 
 

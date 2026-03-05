@@ -10,7 +10,6 @@
 static const char *TAG = "MAIN";
 
 Networking &network = Networking::getInstance();
-Identity identity;
 
 void handleInput()
 {
@@ -21,39 +20,36 @@ void handleInput()
 	
 	unsigned long now = millis();
 
-	static InputData previousInput;
-	static InputData currentInput;
-
-	static Packet packet = {
-		.identity = network.getIdentity(),
-	};
+	static Packet previousInput;
+	static Packet currentInput;
 
 	// Stel de input data in
 	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != NTC_NO_REALISTIC_DATA))
 	{
-		currentInput.NTC_RAW_DATA = READ_NTC();
-		currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
+		// currentInput.NTC_RAW_DATA = READ_NTC();
+		// currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
 
 		// Kopieer de input data naar het pakket
-		memcpy(packet.data, &currentInput, sizeof(InputData));
+		memcpy(Packet.realData, &currentInput, sizeof(Packet));
 	}
 	else
 	{
 		// Geen realistische data, stuur lege data
-		memset(packet.data, 0, sizeof(InputData));
+		memset(Packet.realData, 0, sizeof(Packet));
 	}
 
 	// Controleer of de input is veranderd
-	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
+	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(Packet)) != 0;
 
 	bool shouldUpdate = true;
 
 	// Verstuur het pakket als dat nodig is
 	if (shouldUpdate)
 	{
-		network.send(&packet);
+		network.createPacket(Packet *packet);
+    	esp_now_send(BROADCAST_ADDRESS, (uint8_t *)packet, sizeof(Packet));
+    	packet.packetCount = packet->packetCount+1;
 		previousInput = currentInput;
-
 		lastInput = now;
 	}
 }
@@ -65,8 +61,7 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 
 void setup()
 {
-	// Stel de identiteit in
-	identity.type = IDENTITY_BAND;
+
 
 	// Start de seriële communicatie
 	Serial.begin(115200);
@@ -75,7 +70,6 @@ void setup()
 	esp_log_level_set("*", ESP_LOG_INFO);
 
 	// Initialiseer het netwerk
-	network.setIdentity(identity);
 	network.onReceive(handleNetwork);
 	network.begin();
 
@@ -85,9 +79,9 @@ void setup()
 void loop()
 {
 	// Werk het netwerk bij
-	network.handle();
+	network.handleConnection();
 
 	handleInput();
 
-	delay(10);
+	delay(100);
 }

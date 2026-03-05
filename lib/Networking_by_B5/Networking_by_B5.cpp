@@ -43,32 +43,34 @@ void Networking::begin()
                              { Networking::getInstance().handleReceive(mac, data, len); });
 }
 
-void Networking::setIdentity(Identity identity)
+
+
+// typedef struct //Verander types in Packet.[name]
+// {
+//     uint8_t startOfCommunication;
+//     uint8_t packetLength;
+//     bool priorityState;
+
+//     uint8_t sourceIdentity;
+//     uint8_t destinationIdentity;
+//     uint32_t packetCount;
+//     uint8_t packageFunctionCode;
+
+//     uint32_t realData;
+    
+//     uint8_t endOfTransmission;
+//     bool redundancyCheck; //LRC
+// } Packet;
+
+void Networking::createPacket(const Packet *packet, bool newData, uint8_t sourceIdentity)
 {
-    this->identity = identity;
-}
-
-Identity Networking::getIdentity()
-{
-    return this->identity;
-}
-
-void Networking::send(Packet *packet)
-{
-    esp_now_send(BROADCAST_ADDRESS, (uint8_t *)packet, sizeof(Packet));
-
-#if NETWORKING_DEBUG
-    monitorPacket(this->mac, packet);
-#endif
-}
-
-void Networking::acknowledge()
-{
-    static Packet packet = {
-        .identity = this->identity,
-    };
-
-    this->send(&packet);
+    Packet.startOfCommunication = 01;
+    Packet.packetLength = 113;
+    Packet.priorityState = newData;
+    
+    Packet.sourceIdentity = strtol("00010101");
+    Packet.destinationIdentity = strtol("00010101");
+    packet.packageFunctionCode = PACKAGETYPE_DATA_SEND;
 }
 
 void Networking::onReceive(ReceiveCallback callback)
@@ -118,7 +120,7 @@ void Networking::receiveInternal(const uint8_t *mac, const Packet *packet)
 
 void Networking::handle()
 {
-    this->handlePing();
+    handleConnection();
 
 #if NETWORKING_DEBUG
     static char buf[32] = {};
@@ -184,24 +186,33 @@ void Networking::handle()
 #endif
 }
 
-void Networking::handlePing()
+void Networking::handleConnection(const Packet *packet)
 {
-    static unsigned long lastPing = 0;
-    static unsigned long pingInterval = 300;
-
-    static Packet packet = {
-        .identity = this->identity,
-    };
+    unsigned long lastPacket = 0;
+    unsigned long pingInterval = 300;
+    bool newPacketNeeded;
+    // static Packet packet = {
+    //     .identity = this->identity,
+    // };
 
     unsigned long now = millis();
 
-    if (now - lastPing < pingInterval)
+    if ((now - lastPacket < pingInterval)&&(!newPacketNeeded))
+    {
         return;
+    }
+    
+    createPacket(Packet *packet);
+    esp_now_send(BROADCAST_ADDRESS, (uint8_t *)packet, sizeof(Packet));
+    packet.packetCount = packet->packetCount+1;
+    newPacketNeeded = false;
 
-    this->send(&packet);
-
-    lastPing = now;
+    lastPacket = now;
     pingInterval = random(500, 1000);
+
+    #if NETWORKING_DEBUG
+    monitorPacket(this->mac, packet);
+    #endif
 }
 
 void Networking::monitorPacket(const uint8_t *mac, const Packet *packet)
@@ -212,7 +223,7 @@ void Networking::monitorPacket(const uint8_t *mac, const Packet *packet)
     Serial.print("nwdbg;");
     Serial.print(macToString(mac));
     Serial.print(";");
-    Serial.println(packetToString(&packet->data, sizeof(packet->data)));
+    Serial.println(packetToString(&packet, sizeof(packet)));
 }
 
 void printPacket(const uint8_t *mac, const Packet *packet)
@@ -222,11 +233,19 @@ void printPacket(const uint8_t *mac, const Packet *packet)
     Serial.print("Received packet from: ");
     Serial.println(macToString(mac));
     Serial.print("Data: ");
-    for (int i = 0; i < sizeof(packet->data); i++)
-    {
-        if (i > 0)
-            Serial.print(" ");
-        Serial.print(packet->data[i], HEX);
-    }
+    // for (int i = 0; i < sizeof(packet); i++)
+    // {
+        // if (i > 0)
+        Serial.print(" ");
+        Serial.print(packet->startOfCommunication, HEX);
+        Serial.print("\t");
+        Serial.print(packet->packetLength, HEX);
+        Serial.print("\t");
+        Serial.print(packet->packetCount, HEX);
+
+    // }
     Serial.println();
 }
+
+uint8_t startOfCommunication;
+    uint8_t packetLength;

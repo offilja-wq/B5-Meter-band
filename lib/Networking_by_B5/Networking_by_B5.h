@@ -20,38 +20,38 @@ typedef enum : uint8_t
     IDENTITY_OBSERVER
 } IdentityType;
 
-
-typedef struct
+typedef enum : uint8_t
 {
-    IdentityType type;
-} Identity;
+    PACKAGETYPE_RETRANSMIT = 01,
+    PACKAGETYPE_DATA_SEND = 02,
+    PACKAGETYPE_COMMAND_RESET = 03,
+    PACKAGETYPE_CALL_STATE = 04,
+    PACKAGETYPE_CALL_ACKNOWLEDGE = 05
 
-// typedef enum : uint8_t
-// {
-//     COMMAND_PING = 0x00,
-//     COMMAND_INPUT = 0x01,
+} packageFunctionCode;
 
-//     COMMAND_RESET = 0x03,
-
-//     COMMAND_RESTART = 0x10,
-//     COMMAND_PAIR_CONTROLLER = 0x11,
-
-//     COMMAND_ACK = 0xFF
-// } CommandType;
-
-typedef struct
+typedef enum : bool
 {
-    Identity identity;
+    PRIORITYSTATE_LOW = false,
+    PRIORITYSTATE_HIGH = true
+} priorityState;
 
-    // CommandType command;
-    uint8_t data[16];
+typedef struct //Verander types in Packet.[name]
+{
+    uint8_t startOfCommunication;
+    uint8_t packetLength;
+    bool priorityState;
+    
+    uint8_t sourceIdentity;
+    uint8_t destinationIdentity;
+    uint32_t packetCount;
+    uint8_t packageFunctionCode;
+
+    uint32_t realData;
+    
+    uint8_t endOfTransmission;
+    bool redundancyCheck; //LRC
 } Packet;
-
-typedef struct
-{
-    int16_t NTC_RAW_DATA;
-    int16_t PRESSURE_RAW_DATA;
-} InputData;
 
 // Callback type voor het ontvangen van pakketten
 typedef void (*ReceiveCallback)(const uint8_t *mac, const Packet *packet);
@@ -62,16 +62,20 @@ public:
     static Networking &getInstance(); // Singleton
 
     void begin(); // Initialiseer networking
-    void setIdentity(Identity identity);
-    Identity getIdentity();
+    // void setIdentity(Identity identity);
+    // Identity getIdentity();
 
     void handle();
-    void handlePing();
+    // void handlePing();
 
-    void send(Packet *packet);
-    void acknowledge();
+    // void send(Packet *packet);
+    void createPacket(Packet *packet);
+
+    void handleConnection(Packet *packet);
 
     void onReceive(ReceiveCallback callback);
+
+    void printPacket(uint8_t *mac, Packet *packet); // Functie om een pakket te debuggen
 
 private:
     void handleReceive(const uint8_t *mac, const uint8_t *data, int len);
@@ -79,10 +83,7 @@ private:
 
     void monitorPacket(const uint8_t *mac, const Packet *packet);
 
-    Identity identity;
     uint8_t mac[6];
 
     ReceiveCallback receiveCallback;
 };
-
-void printPacket(const uint8_t *mac, const Packet *packet); // Functie om een pakket te debuggen
