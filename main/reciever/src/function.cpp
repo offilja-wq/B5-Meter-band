@@ -43,9 +43,12 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 	// 	printPacket(mac, packet);
 	// 	break;
 	// }
-	if (now - lastPacket >= 1000)
-	{
-		Serial.print("No connection/n");
-	}
+
+	printInput((InputData *)packet->data);
+	
+	// if (now - lastPacket >= 1000)
+	// {
+	// 	Serial.print("No connection\n");
+	// }
 }
 
