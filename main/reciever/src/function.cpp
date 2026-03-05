@@ -77,17 +77,19 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 {
 	unsigned long now = millis();
 	
-	switch (packet->command)
-	{
-	case COMMAND_INPUT:
-		if (packet->identity.type == IDENTITY_BAND)
-			printInput((InputData *)packet->data);
+	printInput((InputData *)packet->data);
 
-		break;
-	default:
-		printPacket(mac, packet);
-		break;
-	}
+	// switch (packet->command)
+	// {
+	// case COMMAND_INPUT:
+	// 	if (packet->identity.type == IDENTITY_BAND)
+	// 		printInput((InputData *)packet->data);
+
+	// 	break;
+	// default:
+	// 	printPacket(mac, packet);
+	// 	break;
+	// }
 	if (now - lastPacket >= 1000)
 	{
 		Serial.print("No connection\n");

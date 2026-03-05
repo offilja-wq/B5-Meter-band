@@ -77,6 +77,8 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 {
 	unsigned long now = millis();
 	
+	printInput((InputData *)packet->data);
+
 	// switch (packet->command)
 	// {
 	// case COMMAND_INPUT:
