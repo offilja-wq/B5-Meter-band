@@ -66,12 +66,10 @@ typedef struct //Verander types in Package.[name]
 
 
 
-
     bool priorityState;
 
 
 } Package;
-
 
 
 
