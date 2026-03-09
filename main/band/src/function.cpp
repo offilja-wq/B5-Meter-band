@@ -95,3 +95,56 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 		Serial.print("No connection\n");
 	}
 }
+
+
+
+void createPacket()
+{
+	static const char *TAG = "MAIN";
+
+	Networking &networkBand = Networking::getInstance();
+	Identity identityBand;
+	
+	SENSORS Sensors;
+	
+	static unsigned long lastInput = 0;
+	static unsigned long lastHeartbeat = 0;
+	
+	unsigned long now = millis();
+
+	static InputData previousInput;
+	static InputData currentInput;
+
+	static Packet packet = {
+		.identity = networkBand.getIdentity(),
+	};
+
+	// Stel de input data in
+	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != NTC_NO_REALISTIC_DATA))
+	{
+		currentInput.NTC_RAW_DATA = READ_NTC();
+		currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
+
+		// Kopieer de input data naar het pakket
+		memcpy(packet.data, &currentInput, sizeof(InputData));
+	}
+	else
+	{
+		// Geen realistische data, stuur lege data
+		memset(packet.data, 0, sizeof(InputData));
+	}
+
+	// Controleer of de input is veranderd
+	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
+
+	bool shouldUpdate = true;
+
+	// Verstuur het pakket als dat nodig is
+	if (shouldUpdate)
+	{
+		networkBand.send(&packet);
+		previousInput = currentInput;
+
+		lastInput = now;
+	}
+}

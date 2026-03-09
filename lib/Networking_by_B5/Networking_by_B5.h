@@ -20,37 +20,41 @@ typedef enum : uint8_t
     IDENTITY_OBSERVER
 } IdentityType;
 
-
 typedef struct
 {
     IdentityType type;
 } Identity;
 
-// typedef enum : uint8_t
-// {
-//     COMMAND_PING = 0x00,
-//     COMMAND_INPUT = 0x01,
-
-//     COMMAND_RESET = 0x03,
-
-//     COMMAND_RESTART = 0x10,
-//     COMMAND_PAIR_CONTROLLER = 0x11,
-
-//     COMMAND_ACK = 0xFF
-// } CommandType;
-
 typedef struct
 {
     Identity identity;
-
-    // CommandType command;
     uint8_t data[16];
 } Packet;
 
-typedef struct
+typedef enum : uint8_t
 {
+    PACKAGETYPE_RETRANSMIT = 01,
+    PACKAGETYPE_DATA_SEND = 02,
+    PACKAGETYPE_COMMAND_RESET = 03,
+    PACKAGETYPE_CALL_STATE = 04,
+    PACKAGETYPE_CALL_ACKNOWLEDGE = 05
+
+} PACKAGETYPECODE;
+
+typedef struct //Verander types in Package.[name]
+{
+    
+    uint8_t packageSize;
+    uint8_t sourceIdentity;
+    uint8_t destinationIdentity;
+    uint32_t packageCount;
+    PACKAGETYPECODE packageTypeCode;
+
     int16_t NTC_RAW_DATA;
     int16_t PRESSURE_RAW_DATA;
+
+
+    bool PriorityState;
 } InputData;
 
 // Callback type voor het ontvangen van pakketten
@@ -65,7 +69,6 @@ public:
     void setIdentity(Identity identity);
     Identity getIdentity();
 
-    void handle();
     void handlePing();
 
     void send(Packet *packet);

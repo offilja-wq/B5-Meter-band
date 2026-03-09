@@ -17,32 +17,6 @@ Identity identity;
 unsigned long lastPacket;
 
 
-// int READ_NTC() {
-//     //NTC_SENSOR_PIN
-//     return digitalRead(NTC_SENSOR_PIN);
-// }
-
-// int READ_PRESSURE() {
-//     //PRESSURE_SENSOR_PIN
-//     return digitalRead(PRESSURE_SENSOR_PIN);
-// }
-
-// void printMacAddress(){
-//   uint8_t baseMac[6];
-//   if (esp_wifi_get_mac(WIFI_IF_STA, baseMac) == ESP_OK) {
-//     Serial.printf(
-//             "%02x:%02x:%02x:%02x:%02x:%02x\n",
-//             baseMac[0], baseMac[1], baseMac[2],baseMac[3], baseMac[4], baseMac[5]);
-//   } else {
-//     Serial.println("not found");
-//   }
-// }
-
-
-
-// int encodePackage(int type) {
-
-
 // uint8_t groupID = 0x15;
 
 // char package[100] = {0};
@@ -50,17 +24,6 @@ unsigned long lastPacket;
 // package[0]= 0;
 
 // }
-
-
-int READ_NTC() {
-    //NTC_SENSOR_PIN
-    return 101;
-}
-
-int READ_PRESSURE() {
-    //PRESSURE_SENSOR_PIN
-    return 202;
-}
 
 // RECIEVE
 void printInput(const InputData *input)
@@ -93,5 +56,60 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 	if (now - lastPacket >= 1000)
 	{
 		Serial.print("No connection\n");
+	}
+}
+
+void createPacket()
+{
+	static const char *TAG = "MAIN";
+
+	Networking &networkReciever = Networking::getInstance();
+	Identity identityReciever;
+	
+	SENSORS Sensors;
+	
+	static unsigned long lastInput = 0;
+	static unsigned long lastHeartbeat = 0;
+	
+	unsigned long now = millis();
+
+	static InputData previousInput;
+	static InputData currentInput;
+
+	static Packet packet = {
+		.identity = networkReciever.getIdentity(),
+	};
+
+	// Stel de input data in
+	if (true) // ALS NIEUW PAKKET GEMAAKT MOET WORDEN
+	{
+		//Invoegen nieuwe data
+		currentInput.packageSize;
+    	currentInput.sourceIdentity;
+    	currentInput.destinationIdentity;
+    	currentInput.packageCount;
+    	currentInput.packageTypeCode;
+
+		// Kopieer de input data naar het pakket
+		memcpy(packet.data, &currentInput, sizeof(InputData));
+	}
+	else
+	{
+		// Geen realistische data, stuur lege data
+		memset(packet.data, 0, sizeof(InputData));
+	}
+
+	// Controleer of de input is veranderd
+	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
+
+	bool shouldUpdate = true;
+
+	// Verstuur het pakket als dat nodig is
+	if (shouldUpdate)
+	{
+		networkReciever.send(&packet);
+		previousInput = currentInput;
+
+		lastInput = now;
 	}
 }
