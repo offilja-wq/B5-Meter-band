@@ -12,10 +12,7 @@ void Networking::begin()
 {
     WiFi.mode(WIFI_STA);
     esp_wifi_set_channel(NETWORK_CHANNEL, WIFI_SECOND_CHAN_NONE);
-
-#if WIFI_DISABLE_POWER_SAVE
     WiFi.setSleep(false);
-#endif
 
     if (esp_now_init() != ESP_OK)
     {
@@ -93,33 +90,16 @@ void Networking::handleReceive(const uint8_t *mac, const uint8_t *data, int len)
     Packet *packet = (Packet *)data;
 
     this->receiveCallback(mac, packet);
-    this->receiveInternal(mac, packet);
+    // this->receiveInternal(mac, packet);
 
-#if NETWORKING_DEBUG
+    #if NETWORKING_DEBUG
     monitorPacket(mac, packet);
-#endif
-}
-
-void Networking::receiveInternal(const uint8_t *mac, const Packet *packet)
-{
-    // switch ()
-    // {
-    // case COMMAND_RESTART:
-    //     if (memcmp(packet->data, this->mac, sizeof(this->mac)) == 0)
-    //     {
-    //         ESP_LOGI(TAG, "Received restart command");
-    //         esp_restart();
-    //     }
-    //     break;
-    // case COMMAND_RESET:
-    //     break;
-    // }
+    #endif
 }
 
 void Networking::handlePing()
 {
     static unsigned long lastPing = 0;
-    static unsigned long pingInterval = 300;
 
     static Packet packet = {
         .identity = this->identity,
@@ -127,13 +107,12 @@ void Networking::handlePing()
 
     unsigned long now = millis();
 
-    if (now - lastPing < pingInterval)
+    if (now - lastPing>2000)
         return;
 
-    this->send(&packet);
+    // createPacket();
 
     lastPing = now;
-    pingInterval = random(500, 1000);
 }
 
 void Networking::monitorPacket(const uint8_t *mac, const Packet *packet)

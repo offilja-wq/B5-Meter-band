@@ -38,10 +38,9 @@ typedef enum : uint8_t
     PACKAGETYPE_COMMAND_RESET = 03,
     PACKAGETYPE_CALL_STATE = 04,
     PACKAGETYPE_CALL_ACKNOWLEDGE = 05
-
 } PACKAGETYPECODE;
 
-typedef struct //Verander types in Package.[name]
+typedef struct //Verander types in InputData.[name]
 {
     
     uint8_t packageSize;
@@ -78,7 +77,7 @@ public:
 
 private:
     void handleReceive(const uint8_t *mac, const uint8_t *data, int len);
-    void receiveInternal(const uint8_t *mac, const Packet *packet);
+    // void receiveInternal(const uint8_t *mac, const Packet *packet);
 
     void monitorPacket(const uint8_t *mac, const Packet *packet);
 

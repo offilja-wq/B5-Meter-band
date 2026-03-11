@@ -14,6 +14,7 @@ Networking &networkReciever = Networking::getInstance();
 // Identiteit struct instansieren
 Identity identityReciever;
 
+
 void setup()
 {
 	// Identiteit eigenschappen

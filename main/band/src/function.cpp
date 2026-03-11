@@ -67,7 +67,21 @@ void printInput(const InputData *input)
 {
 	unsigned long now = millis();
 
-  	Serial.print(String(input->NTC_RAW_DATA)+"\t"+input->PRESSURE_RAW_DATA+"\n");
+  	Serial.println(
+		String(input->packageSize)+			"\t"+
+		String(input->sourceIdentity)+		"\t"+
+		String(input->destinationIdentity)+	"\t"+
+		String(input->packageCount)+		"\t"+
+		String(input->packageTypeCode)+		"\t"+
+		String(input->NTC_RAW_DATA)+		"\t"+
+		String(input->PRESSURE_RAW_DATA)+	"\t"+
+		String(input->PriorityState)
+	);
+	
+	if (now - lastPacket >= 1000)
+	{
+		Serial.println("No connection");
+	}
 
 	lastPacket = millis();
 }
@@ -78,22 +92,6 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 	unsigned long now = millis();
 	
 	printInput((InputData *)packet->data);
-
-	// switch (packet->command)
-	// {
-	// case COMMAND_INPUT:
-	// 	if (packet->identity.type == IDENTITY_BAND)
-	// 		printInput((InputData *)packet->data);
-
-	// 	break;
-	// default:
-	// 	printPacket(mac, packet);
-	// 	break;
-	// }
-	if (now - lastPacket >= 1000)
-	{
-		Serial.print("No connection\n");
-	}
 }
 
 
@@ -119,8 +117,10 @@ void createPacket()
 		.identity = networkBand.getIdentity(),
 	};
 
+	bool shouldUpdate = true;
+
 	// Stel de input data in
-	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != NTC_NO_REALISTIC_DATA))
+	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != NTC_NO_REALISTIC_DATA)&&shouldUpdate)
 	{
 		currentInput.NTC_RAW_DATA = READ_NTC();
 		currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
@@ -137,11 +137,10 @@ void createPacket()
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
 
-	bool shouldUpdate = true;
-
 	// Verstuur het pakket als dat nodig is
 	if (shouldUpdate)
 	{
+		currentInput.packageCount = currentInput.packageCount+1;
 		networkBand.send(&packet);
 		previousInput = currentInput;
 
