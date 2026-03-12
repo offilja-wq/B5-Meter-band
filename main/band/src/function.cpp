@@ -62,6 +62,7 @@ void printInput(const InputData *input)
 		String(input->packageTypeCode)+		"\t"+
 		String(input->NTC_RAW_DATA)+		"\t"+
 		String(input->PRESSURE_RAW_DATA)+	"\t"+
+		String(input->EndofTransmission)+	"\t"+
 		String(input->PriorityState)
 	);
 	
@@ -107,6 +108,20 @@ void createPacket(PACKAGETYPECODE type)
 
 	bool shouldUpdate = true;
 
+	// Stel de input data in
+	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != PRESSURE_NO_REALISTIC_DATA)&&shouldUpdate)
+	{
+		currentInput.NTC_RAW_DATA = READ_NTC();
+		currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
+
+		// Kopieer de input data naar het pakket
+		memcpy(packet.data, &currentInput, sizeof(InputData));
+	}
+	else
+	{
+		// Geen realistische data, stuur lege data
+	}
+
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
 
@@ -134,7 +149,7 @@ void createPacket(PACKAGETYPECODE type)
 			// Verwerk resetcommando
 			esp_restart();
 			return;
-			
+
 			break;
 		case PACKAGETYPE_CALL_STATE:
 			// Verwerk oproepstatus
@@ -152,7 +167,7 @@ void createPacket(PACKAGETYPECODE type)
 	// Verstuur het pakket als dat nodig is
 	if (shouldUpdate)
 	{
-		currentInput.startOfCommunication = 01;
+		currentInput.startOfCommunication = 0x01;
 		currentInput.packageSize = sizeof(Packet);
 		currentInput.packageCount = currentInput.packageCount+1;
 
@@ -169,5 +184,6 @@ void createPacket(PACKAGETYPECODE type)
 		currentInput.sourceIdentity = 0x15;
 		currentInput.destinationIdentity = 0x14;
 		currentInput.packageTypeCode = PACKAGETYPE_DATA_SEND;
+		currentInput.EndofTransmission = 0x02;
 	}
 }
