@@ -82,8 +82,7 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 }
 
 
-
-void createPacket()
+void createPacket(PACKAGETYPECODE type)
 {
 	static const char *TAG = "MAIN";
 
@@ -92,6 +91,8 @@ void createPacket()
 	
 	SENSORS Sensors;
 	
+	currentInput.packageTypeCode = type;
+
 	static unsigned long lastInput = 0;
 	static unsigned long lastHeartbeat = 0;
 	
@@ -107,7 +108,7 @@ void createPacket()
 	bool shouldUpdate = true;
 
 	// Stel de input data in
-	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != NTC_NO_REALISTIC_DATA)&&shouldUpdate)
+	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != PRESSURE_NO_REALISTIC_DATA)&&shouldUpdate)
 	{
 		currentInput.NTC_RAW_DATA = READ_NTC();
 		currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
@@ -118,20 +119,67 @@ void createPacket()
 	else
 	{
 		// Geen realistische data, stuur lege data
-		memset(packet.data, 0, sizeof(InputData));
 	}
 
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
 
+
+
+
+
+	switch(type)
+	{
+		case PACKAGETYPE_RETRANSMIT:
+			// Verwerk hertransmissie
+			// de data wordt niet veranderd - geen aanpassing
+			break;
+		case PACKAGETYPE_DATA_SEND:
+			// Verwerk gegevensverzending
+
+			currentInput.NTC_RAW_DATA = READ_NTC();
+			currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
+
+			// Kopieer de input data naar het pakket
+			memcpy(packet.data, &currentInput, sizeof(InputData));
+
+			break;
+		case PACKAGETYPE_COMMAND_RESET:
+			// Verwerk resetcommando
+			
+			break;
+		case PACKAGETYPE_CALL_STATE:
+			// Verwerk oproepstatus
+			break;
+		case PACKAGETYPE_CALL_ACKNOWLEDGE:
+			// Verwerk oproepbevestiging
+			memset(packet.data, 0, sizeof(InputData));
+			break;
+		default:
+			// Onbekend pakkettype
+			memset(packet.data, 0, sizeof(InputData));
+			break;
+	}
+	
 	// Verstuur het pakket als dat nodig is
 	if (shouldUpdate)
 	{
+		currentInput.startOfCommunication = 01;
 		currentInput.packageSize = sizeof(Packet);
 		currentInput.packageCount = currentInput.packageCount+1;
+
+		if ((inputChanged)&&(currentInput.packageTypeCode == PACKAGETYPE_DATA_SEND))
+		{
+			currentInput.PriorityState = true;
+		}
+
 		networkBand.send(&packet);
 		previousInput = currentInput;
 
 		lastInput = now;
+
+		currentInput.sourceIdentity = 0x15;
+		currentInput.destinationIdentity = 0x14;
+		currentInput.packageTypeCode = PACKAGETYPE_DATA_SEND;
 	}
 }
