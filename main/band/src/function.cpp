@@ -17,15 +17,15 @@ static const char *TAG = "MAIN";
 unsigned long lastPacket;
 
 
-// int READ_NTC() {
-//     //NTC_SENSOR_PIN
-//     return digitalRead(NTC_SENSOR_PIN);
-// }
+int READ_NTC() {
+    //NTC_SENSOR_PIN
+    return digitalRead(NTC_SENSOR_PIN);
+}
 
-// int READ_PRESSURE() {
-//     //PRESSURE_SENSOR_PIN
-//     return digitalRead(PRESSURE_SENSOR_PIN);
-// }
+int READ_PRESSURE() {
+    //PRESSURE_SENSOR_PIN
+    return digitalRead(PRESSURE_SENSOR_PIN);
+}
 
 // void printMacAddress(){
 //   uint8_t baseMac[6];
@@ -45,22 +45,9 @@ unsigned long lastPacket;
 
 // uint8_t groupID = 0x15;
 
-// char package[100] = {0};
-
 // package[0]= 0;
 
 // }
-
-
-int READ_NTC() {
-    //NTC_SENSOR_PIN
-    return 303;
-}
-
-int READ_PRESSURE() {
-    //PRESSURE_SENSOR_PIN
-    return 404;
-}
 
 // RECIEVE
 void printInput(const InputData *input)
@@ -140,6 +127,7 @@ void createPacket()
 	// Verstuur het pakket als dat nodig is
 	if (shouldUpdate)
 	{
+		currentInput.packageSize = sizeof(Packet);
 		currentInput.packageCount = currentInput.packageCount+1;
 		networkBand.send(&packet);
 		previousInput = currentInput;

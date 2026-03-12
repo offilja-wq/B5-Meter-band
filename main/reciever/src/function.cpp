@@ -103,7 +103,8 @@ void createPacket()
 
 	// Verstuur het pakket als dat nodig is
 	if (shouldUpdate)
-	{
+	{	
+		currentInput.packageSize = sizeof(Packet);
 		currentInput.packageCount = currentInput.packageCount+1;
 		networkReciever.send(&packet);
 		previousInput = currentInput;

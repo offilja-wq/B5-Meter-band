@@ -31,7 +31,7 @@ typedef struct
     uint8_t data[16];
 } Packet;
 
-typedef enum : uint8_t
+typedef enum : uint8_t //Maak de variabele PACKAGETYPECODE
 {
     PACKAGETYPE_RETRANSMIT = 01,
     PACKAGETYPE_DATA_SEND = 02,
@@ -42,7 +42,7 @@ typedef enum : uint8_t
 
 typedef struct //Verander types in InputData.[name]
 {
-    
+    uint8_t startOfCommunication;
     uint8_t packageSize;
     uint8_t sourceIdentity;
     uint8_t destinationIdentity;
