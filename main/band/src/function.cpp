@@ -107,20 +107,6 @@ void createPacket(PACKAGETYPECODE type)
 
 	bool shouldUpdate = true;
 
-	// Stel de input data in
-	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != PRESSURE_NO_REALISTIC_DATA)&&shouldUpdate)
-	{
-		currentInput.NTC_RAW_DATA = READ_NTC();
-		currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
-
-		// Kopieer de input data naar het pakket
-		memcpy(packet.data, &currentInput, sizeof(InputData));
-	}
-	else
-	{
-		// Geen realistische data, stuur lege data
-	}
-
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
 
@@ -146,6 +132,8 @@ void createPacket(PACKAGETYPECODE type)
 			break;
 		case PACKAGETYPE_COMMAND_RESET:
 			// Verwerk resetcommando
+			esp_restart();
+			return;
 			
 			break;
 		case PACKAGETYPE_CALL_STATE:

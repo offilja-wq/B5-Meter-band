@@ -115,6 +115,13 @@ void Networking::handlePing()
     lastPing = now;
 }
 
+int Networking::calculateLRC(Packet *packet);
+{   
+    int LRC;
+    
+    return(LRC)
+}
+
 void Networking::monitorPacket(const uint8_t *mac, const Packet *packet)
 {
     if (Serial.availableForWrite() < 64)

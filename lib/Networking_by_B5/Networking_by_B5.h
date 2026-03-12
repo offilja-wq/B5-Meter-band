@@ -49,8 +49,8 @@ typedef struct //Verander types in InputData.[name]
     uint32_t packageCount;
     PACKAGETYPECODE packageTypeCode;
 
-    int16_t NTC_RAW_DATA;
-    int16_t PRESSURE_RAW_DATA;
+    uint16_t NTC_RAW_DATA;
+    uint16_t PRESSURE_RAW_DATA;
 
 
     bool PriorityState;
@@ -74,6 +74,8 @@ public:
     void acknowledge();
 
     void onReceive(ReceiveCallback callback);
+
+    int calculateLRC(Packet *packet);
 
 private:
     void handleReceive(const uint8_t *mac, const uint8_t *data, int len);
