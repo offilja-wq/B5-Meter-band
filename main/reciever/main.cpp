@@ -36,7 +36,7 @@ void loop()
 {
 	networkReciever.handlePing();
 
-	createPacket();
+	createPacket(PACKAGETYPE_DATA_SEND);
 
 	delay(10);
 }

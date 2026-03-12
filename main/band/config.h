@@ -4,8 +4,8 @@
 
 #include <Networking_by_B5.h>
 
-#define NTC_SENSOR_PIN 20
-#define PRESSURE_SENSOR_PIN 21
+#define NTC_SENSOR_PIN 34
+#define PRESSURE_SENSOR_PIN 35
 
 typedef enum : uint8_t 
 {
@@ -18,7 +18,7 @@ typedef enum : uint8_t
     NTC_NO_REALISTIC_DATA
 } NTC_RESULT;
 
-typedef enum : uint8_t 
+typedef enum : uint8_t
 {
     PRESSURE_BREATH_IN,
     PRESSURE_BREATH_OUT,

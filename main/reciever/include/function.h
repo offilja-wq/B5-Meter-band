@@ -18,4 +18,4 @@ void printInput(const InputData *input);
 
 void handleNetwork(const uint8_t *mac, const Packet *packet);
 
-void createPacket();
+void createPacket(PACKAGETYPECODE type);

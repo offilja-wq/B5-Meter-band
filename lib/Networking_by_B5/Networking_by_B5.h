@@ -28,7 +28,7 @@ typedef struct
 typedef struct
 {
     Identity identity;
-    uint8_t data[16];
+    uint8_t data[20];
 } Packet;
 
 typedef enum : uint8_t //Maak de variabele PACKAGETYPECODE
@@ -51,10 +51,11 @@ typedef struct //Verander types in InputData.[name]
 
     uint16_t NTC_RAW_DATA;
     uint16_t PRESSURE_RAW_DATA;
-
-    uint8_t EndofTransmission;
-
     bool PriorityState;
+
+    uint8_t endOfTransmission;
+    uint8_t longitudinalRedundancyCheck;
+
 } InputData;
 
 // Callback type voor het ontvangen van pakketten
@@ -75,8 +76,10 @@ public:
     void acknowledge();
 
     void onReceive(ReceiveCallback callback);
+    int response(Packet *packet);
 
-    int calculateLRC(Packet *packet);
+    int calculateLRCOutput(Packet *packet);
+    // int calculateLRCInput(InputData *input);
 
 private:
     void handleReceive(const uint8_t *mac, const uint8_t *data, int len);

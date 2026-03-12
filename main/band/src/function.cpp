@@ -9,6 +9,8 @@
 
 static const char *TAG = "MAIN";
 
+// Networking &networkBand = Networking::getInstance();
+
 // Netwerk class instansieren
 // Networking &network = Networking::getInstance();
 // Identiteit struct instansieren
@@ -19,12 +21,12 @@ unsigned long lastPacket;
 
 int READ_NTC() {
     //NTC_SENSOR_PIN
-    return digitalRead(NTC_SENSOR_PIN);
+    return analogRead(NTC_SENSOR_PIN);
 }
 
 int READ_PRESSURE() {
     //PRESSURE_SENSOR_PIN
-    return digitalRead(PRESSURE_SENSOR_PIN);
+    return analogRead(PRESSURE_SENSOR_PIN);
 }
 
 // void printMacAddress(){
@@ -50,22 +52,29 @@ int READ_PRESSURE() {
 // }
 
 // RECIEVE
-void printInput(const InputData *input)
+void printInput(InputData *input)
 {
 	unsigned long now = millis();
 
-  	Serial.println(
-		String(input->packageSize)+			"\t"+
-		String(input->sourceIdentity)+		"\t"+
-		String(input->destinationIdentity)+	"\t"+
-		String(input->packageCount)+		"\t"+
-		String(input->packageTypeCode)+		"\t"+
-		String(input->NTC_RAW_DATA)+		"\t"+
-		String(input->PRESSURE_RAW_DATA)+	"\t"+
-		String(input->EndofTransmission)+	"\t"+
-		String(input->PriorityState)
+  	Serial.print(
+		String(input->startOfCommunication)+		"\t"+
+		String(input->packageSize)+					"\t"+
+		String(input->sourceIdentity)+				"\t"+
+		String(input->destinationIdentity)+			"\t"+
+		String(input->packageCount)+				"\t"+
+		String(input->packageTypeCode)+				"\t"+
+		String(input->NTC_RAW_DATA)+				"\t"+
+		String(input->PRESSURE_RAW_DATA)+			"\t"+
+		String(input->PriorityState)+				"\t"+
+		String(input->endOfTransmission)+			"\t"+
+		String(input->longitudinalRedundancyCheck)+ "\t"
 	);
-	
+
+	if((input->longitudinalRedundancyCheck)/* == (networkBand.calculateLRCInput(input))*/)
+		{
+			Serial.println("true");
+		}
+
 	if (now - lastPacket >= 1000)
 	{
 		Serial.println("No connection");
@@ -79,7 +88,7 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 {
 	unsigned long now = millis();
 	
-	printInput((InputData *)packet->data);
+	printInput((InputData*)packet->data);
 }
 
 
@@ -91,8 +100,6 @@ void createPacket(PACKAGETYPECODE type)
 	Identity identityBand;
 	
 	SENSORS Sensors;
-	
-	currentInput.packageTypeCode = type;
 
 	static unsigned long lastInput = 0;
 	static unsigned long lastHeartbeat = 0;
@@ -106,29 +113,11 @@ void createPacket(PACKAGETYPECODE type)
 		.identity = networkBand.getIdentity(),
 	};
 
-	bool shouldUpdate = true;
-
-	// Stel de input data in
-	if ((Sensors.Ntc_result != NTC_NO_REALISTIC_DATA)&&(Sensors.Pressure_result != PRESSURE_NO_REALISTIC_DATA)&&shouldUpdate)
-	{
-		currentInput.NTC_RAW_DATA = READ_NTC();
-		currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
-
-		// Kopieer de input data naar het pakket
-		memcpy(packet.data, &currentInput, sizeof(InputData));
-	}
-	else
-	{
-		// Geen realistische data, stuur lege data
-	}
+	currentInput.packageTypeCode = type;
 
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
-
-
-
-
-
+	
 	switch(type)
 	{
 		case PACKAGETYPE_RETRANSMIT:
@@ -144,6 +133,9 @@ void createPacket(PACKAGETYPECODE type)
 			// Kopieer de input data naar het pakket
 			memcpy(packet.data, &currentInput, sizeof(InputData));
 
+			previousInput = currentInput;
+			lastInput = now;
+
 			break;
 		case PACKAGETYPE_COMMAND_RESET:
 			// Verwerk resetcommando
@@ -157,33 +149,22 @@ void createPacket(PACKAGETYPECODE type)
 		case PACKAGETYPE_CALL_ACKNOWLEDGE:
 			// Verwerk oproepbevestiging
 			memset(packet.data, 0, sizeof(InputData));
-			break;
-		default:
-			// Onbekend pakkettype
-			memset(packet.data, 0, sizeof(InputData));
-			break;
+		break;
 	}
 	
 	// Verstuur het pakket als dat nodig is
-	if (shouldUpdate)
-	{
-		currentInput.startOfCommunication = 0x01;
-		currentInput.packageSize = sizeof(Packet);
-		currentInput.packageCount = currentInput.packageCount+1;
+	
+	currentInput.startOfCommunication = 01;
+	currentInput.packageSize = sizeof(Packet)-1;
+	currentInput.sourceIdentity = 0x14;
+	currentInput.destinationIdentity = 0x15;
 
-		if ((inputChanged)&&(currentInput.packageTypeCode == PACKAGETYPE_DATA_SEND))
-		{
-			currentInput.PriorityState = true;
-		}
-
-		networkBand.send(&packet);
-		previousInput = currentInput;
-
-		lastInput = now;
-
-		currentInput.sourceIdentity = 0x15;
-		currentInput.destinationIdentity = 0x14;
-		currentInput.packageTypeCode = PACKAGETYPE_DATA_SEND;
-		currentInput.EndofTransmission = 0x02;
-	}
+	currentInput.packageCount = currentInput.packageCount+1;
+	currentInput.packageTypeCode = type;
+	currentInput.PriorityState = (inputChanged&&(currentInput.packageTypeCode == PACKAGETYPE_DATA_SEND));
+	
+	currentInput.endOfTransmission = 02;
+	currentInput.longitudinalRedundancyCheck = networkBand.calculateLRCOutput(&packet);
+	
+	networkBand.send(&packet);
 }

@@ -36,7 +36,7 @@ void loop()
 	// Werk het netwerk bij
 	networkBand.handlePing();
 
-	createPacket();
+	createPacket(PACKAGETYPE_DATA_SEND);
 
 	delay(10);
 }

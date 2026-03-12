@@ -115,12 +115,42 @@ void Networking::handlePing()
     lastPing = now;
 }
 
-int Networking::calculateLRC(Packet *packet);
+int Networking::response(Packet *packet)
 {   
-    int LRC;
-    
-    return(LRC)
+    int output;
+    // PACKAGETYPE_RETRANSMIT = 01,
+    // PACKAGETYPE_DATA_SEND = 02,
+    // PACKAGETYPE_COMMAND_RESET = 03,
+    // PACKAGETYPE_CALL_STATE = 04,
+    // PACKAGETYPE_CALL_ACKNOWLEDGE = 05
+
+    return output;
 }
+
+
+int Networking::calculateLRCOutput(Packet *packet)
+{   
+    uint8_t LRC;
+    uint8_t *data = (uint8_t*)packet;
+
+    for(uint8_t count = 0; count < sizeof(Packet)-1; count++)
+    {
+        LRC ^= data[count];
+    }
+    return LRC;
+}
+
+// int Networking::calculateLRCInput(InputData *input)
+// {   
+//     uint8_t LRC;
+//     uint8_t *data = (uint8_t*)input;
+
+//     for(uint8_t count = 0; count < sizeof(Packet)-1; count++)
+//     {
+//         LRC ^= data[count];
+//     }
+//     return LRC;
+// }
 
 void Networking::monitorPacket(const uint8_t *mac, const Packet *packet)
 {
