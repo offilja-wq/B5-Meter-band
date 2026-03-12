@@ -52,6 +52,7 @@ typedef struct //Verander types in InputData.[name]
     uint16_t NTC_RAW_DATA;
     uint16_t PRESSURE_RAW_DATA;
 
+    uint8_t EndofTransmission;
 
     bool PriorityState;
 } InputData;
