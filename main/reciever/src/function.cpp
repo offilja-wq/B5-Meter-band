@@ -43,9 +43,10 @@ unsigned long lastPacket;
 // RECIEVE
 void printInput(InputData *input)
 {
+	Networking &networkBand = Networking::getInstance();
 	unsigned long now = millis();
 
-  	Serial.print(
+  	Serial.println(
 		String(input->startOfCommunication)+		"\t"+
 		String(input->packageSize)+					"\t"+
 		String(input->sourceIdentity)+				"\t"+
@@ -56,13 +57,19 @@ void printInput(InputData *input)
 		String(input->PRESSURE_RAW_DATA)+			"\t"+
 		String(input->PriorityState)+				"\t"+
 		String(input->endOfTransmission)+			"\t"+
-		String(input->longitudinalRedundancyCheck)+ "\t"
+		String(input->longitudinalRedundancyCheck)+ "\t"+
+		
+		// String(networkBand.calculateLRCInput(input))+"\t"
 	);
 
-	if((input->longitudinalRedundancyCheck)/* == (networkReciever.calculateLRCInput(input))*/)
-		{
-			Serial.println("true");
-		}
+	// if((input->longitudinalRedundancyCheck) == networkBand.calculateLRCInput(input))
+	// {
+	// 	Serial.println("true");
+	// }
+	// else
+	// {
+	// 	Serial.println("false");
+	// }
 
 	if (now - lastPacket >= 1000)
 	{

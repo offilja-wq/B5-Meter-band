@@ -133,10 +133,23 @@ int Networking::calculateLRCOutput(Packet *packet)
     uint8_t LRC;
     uint8_t *data = (uint8_t*)packet;
 
-    for(uint8_t count = 0; count < sizeof(Packet)-1; count++)
+    for(uint8_t i = 0; i < sizeof(Packet) - 1; i++)
     {
-        LRC ^= data[count];
+        LRC ^= data[i];
     }
+    return LRC;
+}
+
+int Networking::calculateLRCInput(InputData *input)
+{
+    uint8_t LRC = 0;
+    uint8_t *data = (uint8_t*)input;
+
+    for (size_t i = 0; i < sizeof(InputData) - 1; i++)
+    {
+        LRC ^= data[i];
+    }
+
     return LRC;
 }
 

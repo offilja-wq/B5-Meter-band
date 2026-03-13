@@ -79,7 +79,7 @@ public:
     int response(Packet *packet);
 
     int calculateLRCOutput(Packet *packet);
-    // int calculateLRCInput(InputData *input);
+    int calculateLRCInput(InputData *input);
 
 private:
     void handleReceive(const uint8_t *mac, const uint8_t *data, int len);

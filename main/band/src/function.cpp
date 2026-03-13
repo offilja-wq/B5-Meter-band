@@ -9,8 +9,6 @@
 
 static const char *TAG = "MAIN";
 
-// Networking &networkBand = Networking::getInstance();
-
 // Netwerk class instansieren
 // Networking &network = Networking::getInstance();
 // Identiteit struct instansieren
@@ -41,19 +39,10 @@ int READ_PRESSURE() {
 // }
 
 
-
-// int encodePackage(int type) {
-
-
-// uint8_t groupID = 0x15;
-
-// package[0]= 0;
-
-// }
-
 // RECIEVE
 void printInput(InputData *input)
 {
+	Networking &networkBand = Networking::getInstance();
 	unsigned long now = millis();
 
   	Serial.print(
@@ -67,13 +56,19 @@ void printInput(InputData *input)
 		String(input->PRESSURE_RAW_DATA)+			"\t"+
 		String(input->PriorityState)+				"\t"+
 		String(input->endOfTransmission)+			"\t"+
-		String(input->longitudinalRedundancyCheck)+ "\t"
+		String(input->longitudinalRedundancyCheck)+ "\t"+
+		
+		String(networkBand.calculateLRCInput(input))+"\t"
 	);
 
-	if((input->longitudinalRedundancyCheck)/* == (networkBand.calculateLRCInput(input))*/)
-		{
-			Serial.println("true");
-		}
+	if((input->longitudinalRedundancyCheck) == networkBand.calculateLRCInput(input))
+	{
+		Serial.println("true");
+	}
+	else
+	{
+		Serial.println("false");
+	}
 
 	if (now - lastPacket >= 1000)
 	{
