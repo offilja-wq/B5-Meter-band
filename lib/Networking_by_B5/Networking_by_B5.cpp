@@ -90,7 +90,6 @@ void Networking::handleReceive(const uint8_t *mac, const uint8_t *data, int len)
     Packet *packet = (Packet *)data;
 
     this->receiveCallback(mac, packet);
-    // this->receiveInternal(mac, packet);
 
     #if NETWORKING_DEBUG
     monitorPacket(mac, packet);
@@ -123,7 +122,7 @@ int Networking::response(Packet *packet)
     // PACKAGETYPE_COMMAND_RESET = 03,
     // PACKAGETYPE_CALL_STATE = 04,
     // PACKAGETYPE_CALL_ACKNOWLEDGE = 05
-
+    // WIP
     return output;
 }
 
@@ -152,18 +151,6 @@ int Networking::calculateLRCInput(InputData *input)
 
     return LRC;
 }
-
-// int Networking::calculateLRCInput(InputData *input)
-// {   
-//     uint8_t LRC;
-//     uint8_t *data = (uint8_t*)input;
-
-//     for(uint8_t count = 0; count < sizeof(Packet)-1; count++)
-//     {
-//         LRC ^= data[count];
-//     }
-//     return LRC;
-// }
 
 void Networking::monitorPacket(const uint8_t *mac, const Packet *packet)
 {

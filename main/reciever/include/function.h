@@ -11,8 +11,6 @@ int READ_NTC();
 
 int READ_PRESSURE();
 
-// void printMacAddress();
-
 //RECIEVE
 void printInput(const InputData *input);
 

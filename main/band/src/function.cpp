@@ -9,13 +9,7 @@
 
 static const char *TAG = "MAIN";
 
-// Netwerk class instansieren
-// Networking &network = Networking::getInstance();
-// Identiteit struct instansieren
-// Identity identity;
-
 unsigned long lastPacket;
-
 
 int READ_NTC() {
     //NTC_SENSOR_PIN
@@ -26,18 +20,6 @@ int READ_PRESSURE() {
     //PRESSURE_SENSOR_PIN
     return analogRead(PRESSURE_SENSOR_PIN);
 }
-
-// void printMacAddress(){
-//   uint8_t baseMac[6];
-//   if (esp_wifi_get_mac(WIFI_IF_STA, baseMac) == ESP_OK) {
-//     Serial.printf(
-//             "%02x:%02x:%02x:%02x:%02x:%02x\n",
-//             baseMac[0], baseMac[1], baseMac[2],baseMac[3], baseMac[4], baseMac[5]);
-//   } else {
-//     Serial.println("not found");
-//   }
-// }
-
 
 // RECIEVE
 void printInput(InputData *input)
@@ -57,18 +39,7 @@ void printInput(InputData *input)
 		String(input->PriorityState)+				"\t"+
 		String(input->endOfTransmission)+			"\t"+
 		String(input->longitudinalRedundancyCheck)+ "\t"+
-		
-		String(networkBand.calculateLRCInput(input))+"\t"
 	);
-
-	if((input->longitudinalRedundancyCheck) == networkBand.calculateLRCInput(input))
-	{
-		Serial.println("true");
-	}
-	else
-	{
-		Serial.println("false");
-	}
 
 	if (now - lastPacket >= 1000)
 	{

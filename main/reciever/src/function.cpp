@@ -9,36 +9,7 @@
 
 static const char *TAG = "MAIN";
 
-// Networking &networkReciever = Networking::getInstance();
-
-// Netwerk class instansieren
-// Networking &network = Networking::getInstance();
-// Identiteit struct instansieren
-// Identity identity;
-
 unsigned long lastPacket;
-
-// void printMacAddress(){
-//   uint8_t baseMac[6];
-//   if (esp_wifi_get_mac(WIFI_IF_STA, baseMac) == ESP_OK) {
-//     Serial.printf(
-//             "%02x:%02x:%02x:%02x:%02x:%02x\n",
-//             baseMac[0], baseMac[1], baseMac[2],baseMac[3], baseMac[4], baseMac[5]);
-//   } else {
-//     Serial.println("not found");
-//   }
-// }
-
-
-
-// int encodePackage(int type) {
-
-
-// uint8_t groupID = 0x15;
-
-// package[0]= 0;
-
-// }
 
 // RECIEVE
 void printInput(InputData *input)
@@ -58,18 +29,7 @@ void printInput(InputData *input)
 		String(input->PriorityState)+				"\t"+
 		String(input->endOfTransmission)+			"\t"+
 		String(input->longitudinalRedundancyCheck)+ "\t"+
-		
-		// String(networkBand.calculateLRCInput(input))+"\t"
 	);
-
-	// if((input->longitudinalRedundancyCheck) == networkBand.calculateLRCInput(input))
-	// {
-	// 	Serial.println("true");
-	// }
-	// else
-	// {
-	// 	Serial.println("false");
-	// }
 
 	if (now - lastPacket >= 1000)
 	{
@@ -137,8 +97,6 @@ void createPacket(PACKAGETYPECODE type)
 			memset(packet.data, 0, sizeof(InputData));
 		break;
 	}
-	
-	// Verstuur het pakket als dat nodig is
 	
 	currentInput.startOfCommunication = 01;
 	currentInput.packageSize = sizeof(Packet)-1;
