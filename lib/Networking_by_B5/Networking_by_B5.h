@@ -10,6 +10,8 @@
 #include "esp_log.h"
 #include "utils.h"
 
+#define LED_BUILTIN 2
+
 const uint8_t NETWORK_CHANNEL = 2;
 const uint8_t BROADCAST_ADDRESS[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
@@ -70,7 +72,7 @@ public:
     void setIdentity(Identity identity);
     Identity getIdentity();
 
-    void handlePing();
+    bool handlePing();
 
     void send(Packet *packet);
 

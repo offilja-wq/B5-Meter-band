@@ -36,38 +36,70 @@ void printInput(InputData *input)
 	{
 		Serial.println("No connection");
 	}
-
-	lastPacket = millis();
 }
 
 void handleResponseReciever(InputData *input)
 {
+	SENSORS Sensors;
+	
 	unsigned long now = millis();
 
 	uint32_t oldPackageCount;
-	bool newPacket = (input->packageCount > oldPackageCount)||(input->packageCount == 0);
+	bool ResetSend;
+	bool newPacket = (input->packageCount > oldPackageCount);
 
-	if (input->packageTypeCode == PACKAGETYPE_COMMAND_RESET)
+	if (newPacket)
 	{
-		esp_restart;
+		lastPacket = now;
+		ResetSend = false;
+		oldPackageCount = input->packageCount;
+		digitalWrite(LED_BUILTIN, (((now+lastPacket)/500)%2));
+	} else {
+		digitalWrite(LED_BUILTIN, !newPacket);
+		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
-	if ((now-lastPacket) > 1000) 
+
+	if ((now-lastPacket) > 1000 ) 
 	{
+		digitalWrite(LED_BUILTIN, !newPacket);
+		if(!ResetSend)
+		{
+			createPacket(PACKAGETYPE_COMMAND_RESET);
+			ResetSend = true;
+		}
+
+		delay(50);
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 		return;
 	}
-	if (!newPacket) 
+
+	if ((Sensors.Ntc_result == NTC_NO_REALISTIC_DATA)||
+		(Sensors.Pressure_result == PRESSURE_NO_REALISTIC_DATA))
+		// WIP
 	{
+		createPacket(PACKAGETYPE_RETRANSMIT);
 		return;
 	}
-	createPacket(input->packageTypeCode);
-	lastPacket = now;
+
+	switch (input->packageTypeCode)
+	{
+		case PACKAGETYPE_DATA_SEND:
+			createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+			break;
+		case PACKAGETYPE_COMMAND_RESET:
+			esp_restart;
+			break;
+		case PACKAGETYPE_CALL_ACKNOWLEDGE:
+			createPacket(PACKAGETYPE_DATA_SEND);
+			break;
+		default:
+			createPacket(input->packageTypeCode);
+			break;
+	}
 }
 
 void createPacket(PACKAGETYPECODE type)
 {
-	static const char *TAG = "MAIN";
-
 	Networking &networkReciever = Networking::getInstance();
 	Identity identityReciever;
 	
@@ -86,55 +118,63 @@ void createPacket(PACKAGETYPECODE type)
 		.identity = networkReciever.getIdentity(),
 	};
 
-	currentInput.packageTypeCode = type;
-
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
 
-	Serial.println(type);
-
-	switch(type)
-	{
-		case PACKAGETYPE_RETRANSMIT:
-			currentInput.packageCount = currentInput.packageCount+1;
-			memset(packet.data, 0, sizeof(InputData));
-			type = PACKAGETYPE_CALL_ACKNOWLEDGE;
-			break;
-		case PACKAGETYPE_DATA_SEND:
-			// Verwerk gegevensverzending
-			currentInput.packageCount = currentInput.packageCount+1;
-			memset(packet.data, 0, sizeof(InputData));
-			previousInput = currentInput;
-			break;
-		case PACKAGETYPE_CALL_STATE:
-			// Verwerk oproepstatus
-			break;
-		case PACKAGETYPE_CALL_ACKNOWLEDGE:
-			// Verwerk oproepbevestiging
-			currentInput.packageCount = currentInput.packageCount+1;
-			memset(packet.data, 0, sizeof(InputData));
-			break;
-	}
-	
-	// Verstuur het pakket als dat nodig is
-	
 	currentInput.startOfCommunication = 01;
 	currentInput.packageSize = sizeof(Packet)-1;
 	currentInput.sourceIdentity = 0x14;
 	currentInput.destinationIdentity = 0x15;
+	currentInput.packageCount = currentInput.packageCount+1;
 
 	currentInput.packageTypeCode = type;
 	currentInput.PriorityState = (inputChanged&&(currentInput.packageTypeCode == PACKAGETYPE_DATA_SEND));
 	
 	currentInput.endOfTransmission = 02;
 	currentInput.longitudinalRedundancyCheck = networkReciever.checkLRCOutput(&packet);
+	
+	switch(type)
+	{
+		case PACKAGETYPE_RETRANSMIT:
+			currentInput.packageTypeCode = PACKAGETYPE_CALL_ACKNOWLEDGE;
+			break;
+		case PACKAGETYPE_DATA_SEND:
+			// Verwerk gegevensverzending
+			previousInput = currentInput;
+			break;
+		case PACKAGETYPE_CALL_STATE:
+			// Verwerk oproepstatus
+			// WIP
+			currentInput.packageTypeCode = PACKAGETYPE_CALL_ACKNOWLEDGE;
+			break;
+	}
 
+	memcpy(packet.data, &currentInput, sizeof(InputData));
 	networkReciever.send(&packet);
+}
+
+void updateDisplay(InputData *input)
+{
+	unsigned long now = millis();
+}
+
+void updateStrip(InputData *input)
+{
+	unsigned long now = millis();
 }
 
 // Handelt alle ESP-now paketten af
 void handleNetwork(const uint8_t *mac, const Packet *packet)
 {
+	Networking &networkReciever = Networking::getInstance();
+
+	if (networkReciever.handlePing()) {
+		createPacket(PACKAGETYPE_DATA_SEND);
+	}
+
+	//Local
 	handleResponseReciever((InputData*)packet->data);
 	printInput((InputData*)packet->data);
+	updateDisplay((InputData*)packet->data);
+	updateStrip((InputData*)packet->data);
 }

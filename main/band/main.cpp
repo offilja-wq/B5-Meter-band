@@ -34,9 +34,5 @@ void setup()
 
 void loop()
 {
-	// Werk het netwerk bij
-	networkBand.handlePing();
-	// createPacket(PACKAGETYPE_DATA_SEND);
-
 	delay(10);
 }

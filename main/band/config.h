@@ -4,6 +4,8 @@
 
 #include <Networking_by_B5.h>
 
+#define LED_BUILTIN 2
+
 #define NTC_SENSOR_PIN 34
 #define PRESSURE_SENSOR_PIN 35
 

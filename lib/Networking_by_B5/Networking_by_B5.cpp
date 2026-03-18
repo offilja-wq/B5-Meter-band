@@ -20,6 +20,8 @@ void Networking::begin()
         return;
     }
 
+    pinMode(LED_BUILTIN, OUTPUT);
+
     esp_now_peer_info_t broadcastPeer = {};
     broadcastPeer.channel = NETWORK_CHANNEL;
     broadcastPeer.encrypt = false;
@@ -83,22 +85,26 @@ void Networking::handleReceive(const uint8_t *mac, const uint8_t *data, int len)
     this->receiveCallback(mac, packet);
 }
 
-void Networking::handlePing()
+bool Networking::handlePing()
 {
-    static unsigned long lastPing = 0;
+	static InputData currentInput;
 
-    static Packet packet = {
-        .identity = this->identity,
-    };
-
+	Identity identityBand;
+	
+	static Packet packet = {
+		.identity = Networking::getIdentity(),
+	};
+    
     unsigned long now = millis();
+	unsigned long lastPing;
 
-    if (now - lastPing>2000)
-        return;
-
-    // createPacket();
-
-    lastPing = now;
+    if(((now - lastPing) > 2000))
+	{       
+		lastPing = now;
+        return true;
+	} else {
+        return false;
+    }
 }
 
 int Networking::checkLRCOutput(Packet *packet)
