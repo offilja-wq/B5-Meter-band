@@ -59,15 +59,6 @@ void Networking::send(Packet *packet)
 #endif
 }
 
-void Networking::acknowledge()
-{
-    static Packet packet = {
-        .identity = this->identity,
-    };
-
-    this->send(&packet);
-}
-
 void Networking::onReceive(ReceiveCallback callback)
 {
     this->receiveCallback = callback;
@@ -86,14 +77,10 @@ void Networking::handleReceive(const uint8_t *mac, const uint8_t *data, int len)
         ESP_LOGW(TAG, "No receive callback registered");
         return;
     }
-
+    
     Packet *packet = (Packet *)data;
 
     this->receiveCallback(mac, packet);
-
-    #if NETWORKING_DEBUG
-    monitorPacket(mac, packet);
-    #endif
 }
 
 void Networking::handlePing()
@@ -114,20 +101,7 @@ void Networking::handlePing()
     lastPing = now;
 }
 
-int Networking::response(Packet *packet)
-{   
-    int output;
-    // PACKAGETYPE_RETRANSMIT = 01,
-    // PACKAGETYPE_DATA_SEND = 02,
-    // PACKAGETYPE_COMMAND_RESET = 03,
-    // PACKAGETYPE_CALL_STATE = 04,
-    // PACKAGETYPE_CALL_ACKNOWLEDGE = 05
-    // WIP
-    return output;
-}
-
-
-int Networking::calculateLRCOutput(Packet *packet)
+int Networking::checkLRCOutput(Packet *packet)
 {   
     uint8_t LRC;
     uint8_t *data = (uint8_t*)packet;
@@ -139,7 +113,7 @@ int Networking::calculateLRCOutput(Packet *packet)
     return LRC;
 }
 
-int Networking::calculateLRCInput(InputData *input)
+int Networking::checkLRCInput(InputData *input)
 {
     uint8_t LRC = 0;
     uint8_t *data = (uint8_t*)input;

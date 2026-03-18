@@ -29,14 +29,14 @@ void setup()
 	networkBand.setIdentity(identityBand);
 	networkBand.onReceive(handleNetwork);
 	networkBand.begin();
+	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 }
 
 void loop()
 {
 	// Werk het netwerk bij
 	networkBand.handlePing();
-
-	createPacket(PACKAGETYPE_DATA_SEND);
+	// createPacket(PACKAGETYPE_DATA_SEND);
 
 	delay(10);
 }

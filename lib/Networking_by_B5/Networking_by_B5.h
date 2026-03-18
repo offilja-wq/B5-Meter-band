@@ -73,13 +73,11 @@ public:
     void handlePing();
 
     void send(Packet *packet);
-    void acknowledge();
 
     void onReceive(ReceiveCallback callback);
-    int response(Packet *packet);
 
-    int calculateLRCOutput(Packet *packet);
-    int calculateLRCInput(InputData *input);
+    int checkLRCOutput(Packet *packet);
+    int checkLRCInput(InputData *input);
 
 private:
     void handleReceive(const uint8_t *mac, const uint8_t *data, int len);

@@ -16,4 +16,6 @@ void printInput(const InputData *input);
 
 void handleNetwork(const uint8_t *mac, const Packet *packet);
 
+void handleResponseBand(InputData *input);
+
 void createPacket(PACKAGETYPECODE type);

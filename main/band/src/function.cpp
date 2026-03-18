@@ -27,7 +27,7 @@ void printInput(InputData *input)
 	Networking &networkBand = Networking::getInstance();
 	unsigned long now = millis();
 
-  	Serial.print(
+  	Serial.println(
 		String(input->startOfCommunication)+		"\t"+
 		String(input->packageSize)+					"\t"+
 		String(input->sourceIdentity)+				"\t"+
@@ -38,7 +38,7 @@ void printInput(InputData *input)
 		String(input->PRESSURE_RAW_DATA)+			"\t"+
 		String(input->PriorityState)+				"\t"+
 		String(input->endOfTransmission)+			"\t"+
-		String(input->longitudinalRedundancyCheck)+ "\t"+
+		String(input->longitudinalRedundancyCheck)+ "\t"
 	);
 
 	if (now - lastPacket >= 1000)
@@ -49,14 +49,39 @@ void printInput(InputData *input)
 	lastPacket = millis();
 }
 
-// Handelt alle ESP-now paketten af
-void handleNetwork(const uint8_t *mac, const Packet *packet)
+void handleResponseBand(InputData *input)
 {
 	unsigned long now = millis();
-	
-	printInput((InputData*)packet->data);
-}
+	uint32_t oldPackageCount;
 
+	bool newPacket = (input->packageCount > oldPackageCount)||(input->packageCount == 0);
+
+	if ((now-lastPacket) > 1000) 
+	{
+		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+	}
+	if (!newPacket) 
+	{	
+	return;
+	}
+	lastPacket = now;
+
+	switch(input->packageTypeCode)
+	{
+		case PACKAGETYPE_COMMAND_RESET:
+			// Reset
+			esp_restart;
+			break;
+		case PACKAGETYPE_CALL_ACKNOWLEDGE:
+			// Verwerk oproepbevestiging
+			createPacket(PACKAGETYPE_DATA_SEND);
+			break;
+		default:
+			createPacket(input->packageTypeCode);
+			break;
+	}
+	oldPackageCount = input->packageCount;
+}
 
 void createPacket(PACKAGETYPECODE type)
 {
@@ -84,17 +109,22 @@ void createPacket(PACKAGETYPECODE type)
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
 	
+	Serial.println(type);
+
 	switch(type)
 	{
 		case PACKAGETYPE_RETRANSMIT:
 			// Verwerk hertransmissie
 			// de data wordt niet veranderd - geen aanpassing
+			memcpy(packet.data, &currentInput, sizeof(InputData));
 			break;
 		case PACKAGETYPE_DATA_SEND:
 			// Verwerk gegevensverzending
 
 			currentInput.NTC_RAW_DATA = READ_NTC();
 			currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
+
+			currentInput.packageCount = currentInput.packageCount+1;
 
 			// Kopieer de input data naar het pakket
 			memcpy(packet.data, &currentInput, sizeof(InputData));
@@ -103,34 +133,35 @@ void createPacket(PACKAGETYPECODE type)
 			lastInput = now;
 
 			break;
-		case PACKAGETYPE_COMMAND_RESET:
-			// Verwerk resetcommando
-			esp_restart();
-			return;
-
-			break;
 		case PACKAGETYPE_CALL_STATE:
 			// Verwerk oproepstatus
 			break;
 		case PACKAGETYPE_CALL_ACKNOWLEDGE:
 			// Verwerk oproepbevestiging
 			memset(packet.data, 0, sizeof(InputData));
-		break;
+			currentInput.packageCount = currentInput.packageCount+1;
+			break;
 	}
-	
-	// Verstuur het pakket als dat nodig is
 	
 	currentInput.startOfCommunication = 01;
 	currentInput.packageSize = sizeof(Packet)-1;
 	currentInput.sourceIdentity = 0x14;
 	currentInput.destinationIdentity = 0x15;
 
-	currentInput.packageCount = currentInput.packageCount+1;
 	currentInput.packageTypeCode = type;
 	currentInput.PriorityState = (inputChanged&&(currentInput.packageTypeCode == PACKAGETYPE_DATA_SEND));
 	
 	currentInput.endOfTransmission = 02;
-	currentInput.longitudinalRedundancyCheck = networkBand.calculateLRCOutput(&packet);
+	currentInput.longitudinalRedundancyCheck = networkBand.checkLRCOutput(&packet);
 	
 	networkBand.send(&packet);
+}
+
+// Handelt alle ESP-now paketten af
+void handleNetwork(const uint8_t *mac, const Packet *packet)
+{
+	unsigned long now = millis();
+	
+	handleResponseBand((InputData*)packet->data);
+	printInput((InputData*)packet->data);
 }

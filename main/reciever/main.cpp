@@ -30,13 +30,12 @@ void setup()
 	networkReciever.setIdentity(identityReciever);
 	networkReciever.onReceive(handleNetwork);
 	networkReciever.begin();
+	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 }
 
 void loop()
 {
-	networkReciever.handlePing();
-
-	createPacket(PACKAGETYPE_DATA_SEND);
+	// networkReciever.handlePing();
 
 	delay(10);
 }
