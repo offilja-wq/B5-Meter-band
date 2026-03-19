@@ -34,5 +34,8 @@ void setup()
 
 void loop()
 {
+	// if (networkBand.handlePing()) {
+	// 	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+	// }
 	delay(10);
 }

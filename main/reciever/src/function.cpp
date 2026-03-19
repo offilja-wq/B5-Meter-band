@@ -36,6 +36,8 @@ void printInput(InputData *input)
 	{
 		Serial.println("No connection");
 	}
+
+	lastPacket = now;
 }
 
 void handleResponseReciever(InputData *input)
@@ -53,15 +55,15 @@ void handleResponseReciever(InputData *input)
 		lastPacket = now;
 		ResetSend = false;
 		oldPackageCount = input->packageCount;
-		digitalWrite(LED_BUILTIN, (((now+lastPacket)/500)%2));
+		digitalWrite(LED, (((now+lastPacket)/500)%2));
 	} else {
-		digitalWrite(LED_BUILTIN, !newPacket);
+		digitalWrite(LED, !newPacket);
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 
-	if ((now-lastPacket) > 1000 ) 
+	if ((now-lastPacket) > 1000) 
 	{
-		digitalWrite(LED_BUILTIN, !newPacket);
+		digitalWrite(LED, !newPacket);
 		if(!ResetSend)
 		{
 			createPacket(PACKAGETYPE_COMMAND_RESET);
@@ -109,7 +111,6 @@ void createPacket(PACKAGETYPECODE type)
 	static unsigned long lastHeartbeat = 0;
 	
 	unsigned long now = millis();
-
 
 	static InputData previousInput;
 	static InputData currentInput;
@@ -166,12 +167,6 @@ void updateStrip(InputData *input)
 // Handelt alle ESP-now paketten af
 void handleNetwork(const uint8_t *mac, const Packet *packet)
 {
-	Networking &networkReciever = Networking::getInstance();
-
-	if (networkReciever.handlePing()) {
-		createPacket(PACKAGETYPE_DATA_SEND);
-	}
-
 	//Local
 	handleResponseReciever((InputData*)packet->data);
 	printInput((InputData*)packet->data);

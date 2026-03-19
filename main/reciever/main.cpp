@@ -35,6 +35,10 @@ void setup()
 
 void loop()
 {
+	if (networkReciever.handlePing()) {
+		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+	}
+	
 	delay(10);
 }
 

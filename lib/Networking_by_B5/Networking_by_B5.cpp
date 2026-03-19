@@ -20,7 +20,7 @@ void Networking::begin()
         return;
     }
 
-    pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(LED, OUTPUT);
 
     esp_now_peer_info_t broadcastPeer = {};
     broadcastPeer.channel = NETWORK_CHANNEL;
@@ -98,7 +98,7 @@ bool Networking::handlePing()
     unsigned long now = millis();
 	unsigned long lastPing;
 
-    if(((now - lastPing) > 2000))
+    if(((now - lastPing) > 500))
 	{       
 		lastPing = now;
         return true;

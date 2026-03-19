@@ -4,10 +4,8 @@
 
 #include <Networking_by_B5.h>
 
-#define LED_BUILTIN 2
-
-#define NTC_SENSOR_PIN 34
-#define PRESSURE_SENSOR_PIN 35
+#define NTC_SENSOR_PIN 2
+#define PRESSURE_SENSOR_PIN 3
 
 typedef enum : uint8_t 
 {

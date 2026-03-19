@@ -46,7 +46,7 @@ void printInput(InputData *input)
 		Serial.println("No connection");
 	}
 
-	lastPacket = millis();
+	lastPacket = now;
 }
 
 void handleResponseBand(InputData *input)
@@ -59,10 +59,10 @@ void handleResponseBand(InputData *input)
 	if ((!newPacket)||((now-lastPacket) > 1000)) 
 	{	
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
-		digitalWrite(LED_BUILTIN, 0);
+		digitalWrite(LED, 0);
 		return;
 	} else {
-		digitalWrite(LED_BUILTIN, (((now+lastPacket)/500)%2));
+		digitalWrite(LED, (((now+lastPacket)/500)%2));
 	}
 
 	lastPacket = now;
@@ -172,7 +172,7 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 	Networking &networkBand = Networking::getInstance();
 	
 	if (networkBand.handlePing()) {
-		createPacket(PACKAGETYPE_DATA_SEND);
+		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 
 	//Local
