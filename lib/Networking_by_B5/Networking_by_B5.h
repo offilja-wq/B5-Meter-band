@@ -4,7 +4,7 @@
 
 #include <WiFi.h>
 #include <esp_wifi.h>
-#include "esp_bt.h"
+// #include "esp_bt.h"
 #include "esp_now.h"
 
 #include "esp_log.h"
@@ -12,6 +12,11 @@
 
 const uint8_t NETWORK_CHANNEL = 2;
 const uint8_t BROADCAST_ADDRESS[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+
+typedef struct
+{
+    int PIN_LED;
+} Pinout;
 
 typedef enum : uint8_t
 {
@@ -51,6 +56,9 @@ typedef struct //Verander types in InputData.[name]
 
     uint16_t NTC_RAW_DATA;
     uint16_t PRESSURE_RAW_DATA;
+    uint8_t HEARTBEAT_RAW_DATA;
+    uint16_t SATURATION_RAW_DATA;
+
     bool PriorityState;
 
     uint8_t endOfTransmission;
@@ -66,11 +74,12 @@ class Networking
 public:
     static Networking &getInstance(); // Singleton
 
-    void begin(); // Initialiseer networking
+    void begin(Pinout pinout); // Initialiseer networking
     void setIdentity(Identity identity);
     Identity getIdentity();
+    Pinout getPinout();
 
-    bool handlePing();
+    bool handlePing(Pinout *localPinout);
 
     void send(Packet *packet);
 
@@ -79,6 +88,8 @@ public:
     int checkLRCOutput(Packet *packet);
     int checkLRCInput(InputData *input);
 
+    unsigned long lastPacket;
+
 private:
     void handleReceive(const uint8_t *mac, const uint8_t *data, int len);
     // void receiveInternal(const uint8_t *mac, const Packet *packet);
@@ -86,6 +97,7 @@ private:
     void monitorPacket(const uint8_t *mac, const Packet *packet);
 
     Identity identity;
+    Pinout pinout;
     uint8_t mac[6];
 
     ReceiveCallback receiveCallback;

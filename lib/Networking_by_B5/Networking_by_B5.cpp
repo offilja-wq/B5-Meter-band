@@ -8,11 +8,15 @@ Networking &Networking::getInstance()
     return instance;
 }
 
-void Networking::begin()
+void Networking::begin(Pinout pinout)
 {
+    this->pinout = pinout;
+    
     WiFi.mode(WIFI_STA);
     esp_wifi_set_channel(NETWORK_CHANNEL, WIFI_SECOND_CHAN_NONE);
     WiFi.setSleep(false);
+    
+	pinMode(pinout.PIN_LED, OUTPUT);
 
     if (esp_now_init() != ESP_OK)
     {
@@ -50,6 +54,11 @@ Identity Networking::getIdentity()
     return this->identity;
 }
 
+Pinout Networking::getPinout()
+{
+    return this->pinout;
+}
+
 void Networking::send(Packet *packet)
 {
     esp_now_send(BROADCAST_ADDRESS, (uint8_t *)packet, sizeof(Packet));
@@ -83,29 +92,22 @@ void Networking::handleReceive(const uint8_t *mac, const uint8_t *data, int len)
     this->receiveCallback(mac, packet);
 }
 
-bool Networking::handlePing()
+bool Networking::handlePing(Pinout *localPinout)
 {
-	static InputData currentInput;
-
-	Identity identityBand;
-	
-	static Packet packet = {
-		.identity = Networking::getIdentity(),
-	};
-    
-    unsigned long now = millis();
+	unsigned long now = millis();
 	unsigned long lastPing;
 
     if(((now - lastPing) > 500))
 	{       
 		lastPing = now;
         return true;
+        digitalWrite(localPinout->PIN_LED, 0);
 	} else {
         return false;
     }
 }
 
-int Networking::checkLRCOutput(Packet *packet)
+int Networking::checkLRCOutput(Packet *packet)  
 {   
     uint8_t LRC;
     uint8_t *data = (uint8_t*)packet;

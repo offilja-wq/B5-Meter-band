@@ -9,8 +9,6 @@
 
 static const char *TAG = "MAIN";
 
-unsigned long lastPacket;
-
 int READ_NTC() {
     //NTC_SENSOR_PIN
     return analogRead(NTC_SENSOR_PIN);
@@ -21,51 +19,47 @@ int READ_PRESSURE() {
     return analogRead(PRESSURE_SENSOR_PIN);
 }
 
-// RECIEVE
-void printInput(InputData *input)
+int READ_HEARTBEAT()
 {
-	Networking &networkBand = Networking::getInstance();
-	unsigned long now = millis();
-
-  	Serial.println(
-		String(input->startOfCommunication)+		"\t"+
-		String(input->packageSize)+					"\t"+
-		String(input->sourceIdentity)+				"\t"+
-		String(input->destinationIdentity)+			"\t"+
-		String(input->packageCount)+				"\t"+
-		String(input->packageTypeCode)+				"\t"+
-		String(input->NTC_RAW_DATA)+				"\t"+
-		String(input->PRESSURE_RAW_DATA)+			"\t"+
-		String(input->PriorityState)+				"\t"+
-		String(input->endOfTransmission)+			"\t"+
-		String(input->longitudinalRedundancyCheck)+ "\t"
-	);
-
-	if (now - lastPacket >= 1000)
-	{
-		Serial.println("No connection");
-	}
-
-	lastPacket = now;
+	return 0;
 }
 
+int READ_SATURATION()
+{
+	return 0;
+}
+
+void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
+{
+
+}
+
+void updateStrip()
+{
+
+}
+
+// RECIEVE
 void handleResponseBand(InputData *input)
 {
+	Networking &networkBand = Networking::getInstance();
+	Pinout pinoutBand = networkBand.getPinout();
+
 	unsigned long now = millis();
 	uint32_t oldPackageCount;
 
 	bool newPacket = (input->packageCount > oldPackageCount);
 	
-	if ((!newPacket)||((now-lastPacket) > 1000)) 
+	if ((!newPacket)||((now-networkBand.lastPacket) > 1000)) 
 	{	
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
-		digitalWrite(INTERNAL_LED_YELLOW, 0);
+		digitalWrite(pinoutBand.PIN_LED, 0);
 		return;
 	} else {
-		digitalWrite(INTERNAL_LED_YELLOW, (((now+lastPacket)/500)%2));
+		digitalWrite(pinoutBand.PIN_LED, (((now+networkBand.lastPacket)/500)%2));
 	}
 
-	lastPacket = now;
+	networkBand.lastPacket = now;
 
 	switch(input->packageTypeCode)
 	{
@@ -89,19 +83,13 @@ void handleResponseBand(InputData *input)
 	oldPackageCount = input->packageCount;
 }
 
+// TRANSMIT
 void createPacket(PACKAGETYPECODE type)
 {
 	static const char *TAG = "MAIN";
 
 	Networking &networkBand = Networking::getInstance();
 	Identity identityBand;
-	
-	SENSORS Sensors;
-
-	static unsigned long lastInput = 0;
-	static unsigned long lastHeartbeat = 0;
-	
-	unsigned long now = millis();
 
 	static InputData previousInput;
 	static InputData currentInput;
@@ -131,21 +119,18 @@ void createPacket(PACKAGETYPECODE type)
 			// Verwerk hertransmissie
 			// de data wordt niet veranderd - geen aanpassing
 			currentInput.packageTypeCode = PACKAGETYPE_DATA_SEND;
-			memcpy(packet.data, &currentInput, sizeof(InputData));
 			break;
 		case PACKAGETYPE_DATA_SEND:
 			// Verwerk gegevensverzending
 			currentInput.NTC_RAW_DATA = READ_NTC();
 			currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
+			currentInput.HEARTBEAT_RAW_DATA = READ_HEARTBEAT();
+			currentInput.SATURATION_RAW_DATA = READ_SATURATION();
 
 			currentInput.packageCount = currentInput.packageCount+1;
 			currentInput.packageTypeCode = type;
 
-			// Kopieer de input data naar het pakket
-			memcpy(packet.data, &currentInput, sizeof(InputData));
-
 			previousInput = currentInput;
-			lastInput = now;
 			break;
 		case PACKAGETYPE_CALL_STATE:
 			// Verwerk oproepstatus
@@ -154,10 +139,11 @@ void createPacket(PACKAGETYPECODE type)
 			// Verwerk oproepbevestiging
 			currentInput.packageCount = currentInput.packageCount+1;
 			currentInput.packageTypeCode = type;
-			memcpy(packet.data, &currentInput, sizeof(InputData));
 			break;
 	}
 
+	// Kopieer de input data naar het pakket
+	memcpy(packet.data, &currentInput, sizeof(InputData));
 	networkBand.send(&packet);
 }
 
@@ -170,13 +156,8 @@ void updateStrip(InputData *input)
 void handleNetwork(const uint8_t *mac, const Packet *packet)
 {
 	Networking &networkBand = Networking::getInstance();
-	
-	if (networkBand.handlePing()) {
-		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
-	}
 
 	//Local
 	handleResponseBand((InputData*)packet->data);
-	printInput((InputData*)packet->data);
 	updateStrip((InputData*)packet->data);
 }

@@ -9,13 +9,11 @@
 
 static const char *TAG = "MAIN";
 
-unsigned long lastPacket;
-
 // RECIEVE
 void printInput(InputData *input)
 {
-
 	Networking &networkReciever = Networking::getInstance();
+
 	unsigned long now = millis();
 
   	Serial.println(
@@ -32,16 +30,17 @@ void printInput(InputData *input)
 		String(input->longitudinalRedundancyCheck)+ "\t"
 	);
 
-	if (now - lastPacket >= 1000)
+	if (now - networkReciever.lastPacket >= 1000)
 	{
 		Serial.println("No connection");
 	}
-
-	lastPacket = now;
 }
 
 void handleResponseReciever(InputData *input)
 {
+	Networking &networkReciever = Networking::getInstance();
+	Pinout pinoutReciever = networkReciever.getPinout();
+
 	SENSORS Sensors;
 	
 	unsigned long now = millis();
@@ -52,16 +51,16 @@ void handleResponseReciever(InputData *input)
 
 	if (newPacket)
 	{
-		lastPacket = now;
+		networkReciever.lastPacket = now;
 		ResetSend = false;
 		oldPackageCount = input->packageCount;
-		digitalWrite(INTERNAL_LED_BLUE, (((now+lastPacket)/500)%2));
+		digitalWrite(pinoutReciever.PIN_LED, (((now+networkReciever.lastPacket)/500)%2));
 	} else {
-		digitalWrite(INTERNAL_LED_BLUE, !newPacket);
+		digitalWrite(pinoutReciever.PIN_LED, 0);
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 
-	if ((now-lastPacket) > 1000) 
+	if ((now-networkReciever.lastPacket) > 1000) 
 	{
 		if(!ResetSend)
 		{
@@ -75,7 +74,9 @@ void handleResponseReciever(InputData *input)
 	}
 
 	if ((Sensors.Ntc_result == NTC_NO_REALISTIC_DATA)||
-		(Sensors.Pressure_result == PRESSURE_NO_REALISTIC_DATA))
+		(Sensors.Pressure_result == PRESSURE_NO_REALISTIC_DATA)||
+		(Sensors.Heartbeat_result == HEARTBEAT_NO_REALISTIC_DATA)||
+    	(Sensors.Saturation_Result == SATURATION_NO_REALISTIC_DATA))
 		// WIP
 	{
 		createPacket(PACKAGETYPE_RETRANSMIT);
@@ -97,19 +98,15 @@ void handleResponseReciever(InputData *input)
 			createPacket(input->packageTypeCode);
 			break;
 	}
+
+	networkReciever.lastPacket = now;
 }
 
+// TRANSMIT
 void createPacket(PACKAGETYPECODE type)
 {
 	Networking &networkReciever = Networking::getInstance();
 	Identity identityReciever;
-	
-	SENSORS Sensors;
-
-	static unsigned long lastInput = 0;
-	static unsigned long lastHeartbeat = 0;
-	
-	unsigned long now = millis();
 
 	static InputData previousInput;
 	static InputData currentInput;

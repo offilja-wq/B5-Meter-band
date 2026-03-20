@@ -11,9 +11,11 @@ int READ_NTC();
 
 int READ_PRESSURE();
 
-//RECIEVE
-void printInput(const InputData *input);
+void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE);
 
+void updateStrip();
+
+//RECIEVE
 void handleResponseBand(InputData *input);
 
 void createPacket(PACKAGETYPECODE type);

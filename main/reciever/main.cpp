@@ -13,17 +13,16 @@ static const char *TAG = "MAIN";
 Networking &networkReciever = Networking::getInstance();
 // Identiteit struct instansieren
 Identity identityReciever;
-
+Pinout pinoutReciever;
 
 void setup()
 {
-	// Identiteit eigenschappen
+	// Identiteit eigenschappen`
 	identityReciever.type = IDENTITY_RECIEVER;
+	pinoutReciever.PIN_LED = PIN_LED_RECIEVER;
 
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
-
-	pinMode(INTERNAL_LED_BLUE, OUTPUT);
 
 	// Op wat voor niveau ESP LOG zou loggens
 	esp_log_level_set("*", ESP_LOG_INFO);
@@ -31,13 +30,13 @@ void setup()
 	// Initialiseren van de netwerk instatie
 	networkReciever.setIdentity(identityReciever);
 	networkReciever.onReceive(handleNetwork);
-	networkReciever.begin();
+	networkReciever.begin(pinoutReciever);
 	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 }
 
 void loop()
 {
-	if (networkReciever.handlePing()) {
+	if (networkReciever.handlePing(&pinoutReciever)) {
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 

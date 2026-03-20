@@ -13,34 +13,29 @@ static const char *TAG = "MAIN";
 Networking &networkBand = Networking::getInstance();
 // Identiteit struct instansieren
 Identity identityBand;
+Pinout pinoutBand;
 
 void setup()
 {
 	// Stel de identiteit in
 	identityBand.type = IDENTITY_BAND;
+	pinoutBand.PIN_LED = PIN_LED_BAND;
 
 	// Start de seriële communicatie
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
-
-	pinMode(INTERNAL_LED_YELLOW, OUTPUT);
-	pinMode(INTERNAL_LED_RED, OUTPUT);
-	pinMode(INTERNAL_LED_GREEN, OUTPUT);
-	pinMode(INTERNAL_LED_BLUE, OUTPUT);
 
 	esp_log_level_set("*", ESP_LOG_INFO);
 
 	// Initialiseer het netwerk
 	networkBand.setIdentity(identityBand);
 	networkBand.onReceive(handleNetwork);
-	networkBand.begin();
+	networkBand.begin(pinoutBand);
 	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 }
 
 void loop()
 {
-	// if (networkBand.handlePing()) {
-	// 	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
-	// }
+	networkBand.handlePing(&pinoutBand);
 	delay(10);
 }
