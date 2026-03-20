@@ -55,15 +55,14 @@ void handleResponseReciever(InputData *input)
 		lastPacket = now;
 		ResetSend = false;
 		oldPackageCount = input->packageCount;
-		digitalWrite(LED, (((now+lastPacket)/500)%2));
+		digitalWrite(INTERNAL_LED_BLUE, (((now+lastPacket)/500)%2));
 	} else {
-		digitalWrite(LED, !newPacket);
+		digitalWrite(INTERNAL_LED_BLUE, !newPacket);
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 
 	if ((now-lastPacket) > 1000) 
 	{
-		digitalWrite(LED, !newPacket);
 		if(!ResetSend)
 		{
 			createPacket(PACKAGETYPE_COMMAND_RESET);

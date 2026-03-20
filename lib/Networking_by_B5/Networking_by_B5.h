@@ -10,9 +10,6 @@
 #include "esp_log.h"
 #include "utils.h"
 
-
-#define LED 13
-
 const uint8_t NETWORK_CHANNEL = 2;
 const uint8_t BROADCAST_ADDRESS[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 

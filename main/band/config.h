@@ -4,6 +4,11 @@
 
 #include <Networking_by_B5.h>
 
+#define INTERNAL_LED_YELLOW 13
+#define INTERNAL_LED_RED 14
+#define INTERNAL_LED_GREEN 15
+#define INTERNAL_LED_BLUE 16
+
 #define NTC_SENSOR_PIN 2
 #define PRESSURE_SENSOR_PIN 3
 

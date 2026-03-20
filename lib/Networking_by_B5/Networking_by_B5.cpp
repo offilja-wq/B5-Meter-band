@@ -20,8 +20,6 @@ void Networking::begin()
         return;
     }
 
-    pinMode(LED, OUTPUT);
-
     esp_now_peer_info_t broadcastPeer = {};
     broadcastPeer.channel = NETWORK_CHANNEL;
     broadcastPeer.encrypt = false;

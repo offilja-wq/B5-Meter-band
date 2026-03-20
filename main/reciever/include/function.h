@@ -1,9 +1,9 @@
 #pragma once
 
+#include <Arduino.h>
+
 #include "config.h"
 #include "Networking_by_B5.h"
-
-#include <Arduino.h>
 
 //function prototypes
 

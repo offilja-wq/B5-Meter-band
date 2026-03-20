@@ -4,6 +4,8 @@
 
 #include <Networking_by_B5.h>
 
+#define INTERNAL_LED_BLUE 2
+
 typedef enum : uint8_t 
 {
     NTC_DEAD_HIGH,

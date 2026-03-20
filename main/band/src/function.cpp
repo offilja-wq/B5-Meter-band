@@ -59,10 +59,10 @@ void handleResponseBand(InputData *input)
 	if ((!newPacket)||((now-lastPacket) > 1000)) 
 	{	
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
-		digitalWrite(LED, 0);
+		digitalWrite(INTERNAL_LED_YELLOW, 0);
 		return;
 	} else {
-		digitalWrite(LED, (((now+lastPacket)/500)%2));
+		digitalWrite(INTERNAL_LED_YELLOW, (((now+lastPacket)/500)%2));
 	}
 
 	lastPacket = now;

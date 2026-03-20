@@ -23,6 +23,8 @@ void setup()
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
 
+	pinMode(INTERNAL_LED_BLUE, OUTPUT);
+
 	// Op wat voor niveau ESP LOG zou loggens
 	esp_log_level_set("*", ESP_LOG_INFO);
 
@@ -38,7 +40,7 @@ void loop()
 	if (networkReciever.handlePing()) {
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
-	
+
 	delay(10);
 }
 

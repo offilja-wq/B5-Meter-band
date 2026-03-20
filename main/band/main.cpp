@@ -23,6 +23,11 @@ void setup()
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
 
+	pinMode(INTERNAL_LED_YELLOW, OUTPUT);
+	pinMode(INTERNAL_LED_RED, OUTPUT);
+	pinMode(INTERNAL_LED_GREEN, OUTPUT);
+	pinMode(INTERNAL_LED_BLUE, OUTPUT);
+
 	esp_log_level_set("*", ESP_LOG_INFO);
 
 	// Initialiseer het netwerk
