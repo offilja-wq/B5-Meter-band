@@ -45,7 +45,7 @@ typedef enum : uint8_t //Maak de variabele PACKAGETYPECODE
     PACKAGETYPE_CALL_ACKNOWLEDGE = 05
 } PACKAGETYPECODE;
 
-typedef struct //Verander types in InputData.[name]
+typedef struct // Maak een variabele InputData
 {
     uint8_t startOfCommunication;
     uint8_t packageSize;
@@ -69,7 +69,7 @@ typedef struct //Verander types in InputData.[name]
 // Callback type voor het ontvangen van pakketten
 typedef void (*ReceiveCallback)(const uint8_t *mac, const Packet *packet);
 
-class Networking
+class Networking // Library define
 {
 public:
     static Networking &getInstance(); // Singleton
@@ -92,8 +92,7 @@ public:
 
 private:
     void handleReceive(const uint8_t *mac, const uint8_t *data, int len);
-    // void receiveInternal(const uint8_t *mac, const Packet *packet);
-
+    
     void monitorPacket(const uint8_t *mac, const Packet *packet);
 
     Identity identity;

@@ -7,9 +7,7 @@
 
 //function prototypes
 
-int READ_NTC();
-
-int READ_PRESSURE();
+SENSORS concludeSensors(InputData *input);
 
 //RECIEVE
 void printInput(const InputData *input);

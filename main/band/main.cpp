@@ -21,12 +21,6 @@ void setup()
 	identityBand.type = IDENTITY_BAND;
 	pinoutBand.PIN_LED = PIN_LED_BAND;
 
-	// Start de seriële communicatie
-	Serial.begin(115200);
-	Serial.setDebugOutput(true);
-
-	esp_log_level_set("*", ESP_LOG_INFO);
-
 	// Initialiseer het netwerk
 	networkBand.setIdentity(identityBand);
 	networkBand.onReceive(handleNetwork);

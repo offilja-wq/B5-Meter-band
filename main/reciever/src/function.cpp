@@ -9,6 +9,25 @@
 
 static const char *TAG = "MAIN";
 
+SENSORS concludeSensors(InputData *input)
+{
+	SENSORS Sensors;
+	
+	// Input
+	input->NTC_RAW_DATA;
+	input->PRESSURE_RAW_DATA;
+	input->HEARTBEAT_RAW_DATA;
+	input->SATURATION_RAW_DATA;
+
+	// Output
+	Sensors.Ntc_result;
+	Sensors.Pressure_result;
+	Sensors.Heartbeat_result;
+	Sensors.Saturation_Result;
+
+	return Sensors;
+}
+
 // RECIEVE
 void printInput(InputData *input)
 {
@@ -40,8 +59,6 @@ void handleResponseReciever(InputData *input)
 {
 	Networking &networkReciever = Networking::getInstance();
 	Pinout pinoutReciever = networkReciever.getPinout();
-
-	SENSORS Sensors;
 	
 	unsigned long now = millis();
 
@@ -72,6 +89,8 @@ void handleResponseReciever(InputData *input)
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 		return;
 	}
+
+	SENSORS Sensors = concludeSensors(input);
 
 	if ((Sensors.Ntc_result == NTC_NO_REALISTIC_DATA)||
 		(Sensors.Pressure_result == PRESSURE_NO_REALISTIC_DATA)||

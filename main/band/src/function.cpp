@@ -9,23 +9,27 @@
 
 static const char *TAG = "MAIN";
 
-int READ_NTC() {
-    //NTC_SENSOR_PIN
+int READ_NTC()
+{
+    // Lees NTC
     return analogRead(NTC_SENSOR_PIN);
 }
 
-int READ_PRESSURE() {
-    //PRESSURE_SENSOR_PIN
+int READ_PRESSURE()
+{
+    // Lees Pressure
     return analogRead(PRESSURE_SENSOR_PIN);
 }
 
 int READ_HEARTBEAT()
 {
+	// Lees Heartbeat
 	return 0;
 }
 
 int READ_SATURATION()
 {
+	// Lees Saturation
 	return 0;
 }
 
@@ -48,6 +52,7 @@ void handleResponseBand(InputData *input)
 	unsigned long now = millis();
 	uint32_t oldPackageCount;
 
+	// Check of er echt een nieuw pakket is
 	bool newPacket = (input->packageCount > oldPackageCount);
 	
 	if ((!newPacket)||((now-networkBand.lastPacket) > 1000)) 
@@ -61,6 +66,7 @@ void handleResponseBand(InputData *input)
 
 	networkBand.lastPacket = now;
 
+	// Reageer op het pakket
 	switch(input->packageTypeCode)
 	{
 		case PACKAGETYPE_DATA_SEND:
