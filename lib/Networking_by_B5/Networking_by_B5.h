@@ -25,17 +25,6 @@ typedef enum : uint8_t
     IDENTITY_OBSERVER
 } IdentityType;
 
-typedef struct
-{
-    IdentityType type;
-} Identity;
-
-typedef struct
-{
-    Identity identity;
-    uint8_t data[20];
-} Packet;
-
 typedef enum : uint8_t //Maak de variabele PACKAGETYPECODE
 {
     PACKAGETYPE_RETRANSMIT = 01,
@@ -44,6 +33,11 @@ typedef enum : uint8_t //Maak de variabele PACKAGETYPECODE
     PACKAGETYPE_CALL_STATE = 04,
     PACKAGETYPE_CALL_ACKNOWLEDGE = 05
 } PACKAGETYPECODE;
+
+typedef struct
+{
+    IdentityType type;
+} Identity;
 
 typedef struct // Maak een variabele InputData
 {
@@ -65,6 +59,12 @@ typedef struct // Maak een variabele InputData
     uint8_t longitudinalRedundancyCheck;
 
 } InputData;
+
+typedef struct
+{
+    Identity identity;
+    uint8_t data[sizeof(InputData)];
+} Packet;
 
 // Callback type voor het ontvangen van pakketten
 typedef void (*ReceiveCallback)(const uint8_t *mac, const Packet *packet);
