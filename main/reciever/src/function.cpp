@@ -24,7 +24,101 @@ SENSORS concludeSensors(InputData *input)
 	Sensors.Pressure_result;
 	Sensors.Heartbeat_result;
 	Sensors.Saturation_Result;
+	
+	switch (input->NTC_RAW_DATA)
+	{
+	case 42.001 ... 50.000:
+		Sensors.Ntc_result = NTC_DEAD_HIGH;
+		break;
+	case 38.001 ... 42.000:
+		Sensors.Ntc_result = NTC_DANGEROUS;
+		break;
+	case 37.501 ... 38.000:
+		Sensors.Ntc_result = NTC_TOO_HIGH;
+		break;
+	case 35.501 ... 37.500:
+		Sensors.Ntc_result = NTC_NORMAL;
+		break;
+	case 34.000 ... 35.500:
+		Sensors.Ntc_result = NTC_TOO_LOW;
+		break;
+	default:
+		Sensors.Ntc_result = NTC_NO_REALISTIC_DATA;
+		break;
+	}
 
+	switch (input->PRESSURE_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
+	{
+	case 42.001 ... 50.000:
+		Sensors.Pressure_result = PRESSURE_BREATH_IN;
+		break;
+	case 38.001 ... 42.000:
+		Sensors.Pressure_result = PRESSURE_BREATH_OUT;
+		break;
+	case 24.000 ... 38.000:
+		Sensors.Pressure_result = PRESSURE_NO_SKIN_CONTACT
+		break;
+	default:
+		Sensors.Pressure_result = PRESSURE_NO_REALISTIC_DATA;
+		break;
+	}
+
+		switch (input->HEARTBEAT_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
+	{
+	case 42.001 ... 50.000:
+		Sensors.Heartbeat_result = HEARTBEAT_DEADLY_HIGH;
+		break;
+	case 38.001 ... 42.000:
+		Sensors.Heartbeat_result = HEARTBEAT_PROBLEMATICALLY_HIGH;
+		break;
+	case 37.501 ... 38.000:
+		Sensors.Heartbeat_result = HEARTBEAT_HIGH;
+		break;
+	case 35.501 ... 37.500:
+		Sensors.Heartbeat_result = HEARTBEAT_NORMAL;
+		break;
+	case 34.000 ... 35.500:
+		Sensors.Heartbeat_result = HEARTBEAT_LOW;
+		break;
+	case 34.000 ... 35.500:
+		Sensors.Heartbeat_result = HEARTBEAT_PROBLEMATICALLY_LOW;
+		break;
+	case 34.000 ... 35.500:
+		Sensors.Heartbeat_result = HEARTBEAT_DEADLY_LOW;
+		break;
+	case 34.000 ... 35.500:
+		Sensors.Heartbeat_result = HEARTBEAT_NO_SKIN_CONTACT;
+		break;
+	default:
+		Sensors.Heartbeat_result = HEARTBEAT_NO_REALISTIC_DATA;
+		break;
+	}
+
+	switch (input->SATURATION_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
+	{
+	case 42.001 ... 50.000:
+		Sensors.Saturation_Result = SATURATION_TOO_HIGH;
+		break;
+	case 38.001 ... 42.000:
+		Sensors.Saturation_Result = SATURATION_HIGH;
+		break;
+	case 37.501 ... 38.000:
+		Sensors.Saturation_Result = SATURATION_NORMAL;
+		break;
+	case 35.501 ... 37.500:
+		Sensors.Saturation_Result = SATURATION_LOW;
+		break;
+	case 34.000 ... 35.500:
+		Sensors.Saturation_Result = SATURATION_TOO_LOW;
+		break;
+	case 34.000 ... 35.500:
+		Sensors.Saturation_Result = SATURATION_NO_SKIN_CONTACT;
+		break;
+	default:
+		Sensors.Saturation_Result = SATURATION_NO_REALISTIC_DATA;
+		break;
+	}
+	
 	return Sensors;
 }
 
