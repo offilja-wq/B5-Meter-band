@@ -4,9 +4,8 @@
 
 #include <FastLED.h>
 
+#define PIN_DATA 13
+
 #define NUM_LEDS 10
-#define PIN_DATA 3
 
-// FastLED.addLeds<NEOPIXEL, PIN_DATA>(pixelArray, NUM_LEDS);
-
-// CRGB pixelArray[NUM_LEDS] = {0};     // Software gamma mode.
+CRGB leds[NUM_LEDS] = {0};     // Software gamma mode.
