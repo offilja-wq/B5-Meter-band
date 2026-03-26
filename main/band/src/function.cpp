@@ -35,8 +35,6 @@ int READ_SATURATION()
 
 void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
 {
-	// CRGB leds[NUM_LEDS] = {0};     // Software gamma mode.
-
 	switch(i) {
     	case 1 ... 8 : {
         	CRGB c(BLUE, GREEN, RED); 
@@ -60,13 +58,12 @@ void updateStrip(InputData *input)
 {
 	int ledsAan = map(input->PRESSURE_RAW_DATA, 0, 650, 0, NUM_LEDS);
 
-for (int i = 0; i < NUM_LEDS; i++) {
-	if (i < ledsAan) {
-		setStrip(i, 150, 0, 0);
-  	} else {
-  		setStrip(i, 0, 0, 0);
- 	}
-}
+	setStrip(100, 0, 0, 0);
+
+	for (int i = 0; i < ledsAan; i++)
+	{
+		setStrip(i, 150, 150, 255);
+	}
 }
 
 // RECIEVE

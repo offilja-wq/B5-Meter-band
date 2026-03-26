@@ -34,3 +34,5 @@ void updateDisplay()
 {
     
 }
+
+CRGB leds[NUM_LEDS];

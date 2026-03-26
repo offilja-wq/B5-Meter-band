@@ -24,6 +24,11 @@ SENSORS concludeSensors(InputData *input)
 	Sensors.Pressure_result;
 	Sensors.Heartbeat_result;
 	Sensors.Saturation_Result;
+
+	Sensors.NTC_RAW_DATA = input->NTC_RAW_DATA;
+	Sensors.PRESSURE_RAW_DATA = input->PRESSURE_RAW_DATA;
+	Sensors.HEARTBEAT_RAW_DATA = input->HEARTBEAT_RAW_DATA;
+	Sensors.SATURATION_RAW_DATA = input->SATURATION_RAW_DATA;
 	
 	switch (input->NTC_RAW_DATA)
 	{
@@ -197,6 +202,8 @@ void handleResponseReciever(InputData *input)
 	{
 		case PACKAGETYPE_DATA_SEND:
 			createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+			Serial2.write(START_BYTE);
+  			Serial2.write((uint64_t*)Sensors, sizeof(Sensors));
 			break;
 		case PACKAGETYPE_COMMAND_RESET:
 			esp_restart;

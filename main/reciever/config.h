@@ -6,6 +6,12 @@
 
 #define PIN_LED_RECIEVER 22
 
+#define START_BYTE 0xAA
+#define RXD2 11
+#define TXD2 12
+
+// 25 to 27 connected to nano 10 to 12
+
 typedef enum : uint8_t 
 {
     NTC_DEAD_HIGH,
@@ -57,6 +63,6 @@ typedef struct
     SATURATION_RESULT Saturation_Result;
     uint16_t NTC_RAW_DATA;
     uint16_t PRESSURE_RAW_DATA;
-    uint8_t HEARTBEAT_RAW_DATA;
+    uint16_t HEARTBEAT_RAW_DATA;
     uint16_t SATURATION_RAW_DATA;
 } SENSORS;

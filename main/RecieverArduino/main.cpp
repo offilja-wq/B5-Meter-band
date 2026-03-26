@@ -17,7 +17,7 @@ typedef struct
   uint16_t SATURATION_RAW_DATA;
 } InputData;
 
-CRGB leds[NUM_LEDS] = {0};     // Software gamma mode.
+// CRGB leds[NUM_LEDS] = {0};     // Software gamma mode.
 
 #include <SoftwareSerial.h>
 SoftwareSerial mySerial(11, 12);
