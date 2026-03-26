@@ -27,19 +27,19 @@ SENSORS concludeSensors(InputData *input)
 	
 	switch (input->NTC_RAW_DATA)
 	{
-	case 42.001 ... 70.000:
+	case 43 ... 70:
 		Sensors.Ntc_result = NTC_DEAD_HIGH;
 		break;
-	case 38.001 ... 42.000:
+	case 40 ... 42:
 		Sensors.Ntc_result = NTC_DANGEROUS;
 		break;
-	case 37.501 ... 38.000:
+	case 38 ... 39:
 		Sensors.Ntc_result = NTC_TOO_HIGH;
 		break;
-	case 35.501 ... 37.500:
+	case 35 ... 37:
 		Sensors.Ntc_result = NTC_NORMAL;
 		break;
-	case 25.000 ... 35.500:
+	case 25 ... 34:
 		Sensors.Ntc_result = NTC_TOO_LOW;
 		break;
 	default:

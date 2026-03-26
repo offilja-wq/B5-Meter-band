@@ -7,6 +7,8 @@
 
 //function prototypes
 
+extern CRGB leds[NUM_LEDS];
+
 int READ_NTC();
 
 int READ_PRESSURE();

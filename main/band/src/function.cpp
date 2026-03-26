@@ -35,12 +35,38 @@ int READ_SATURATION()
 
 void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
 {
+	// CRGB leds[NUM_LEDS] = {0};     // Software gamma mode.
 
+	switch(i) {
+    	case 1 ... 8 : {
+        	CRGB c(BLUE, GREEN, RED); 
+        	leds[i-1] = c;
+        	break;
+		}
+    	default: {
+        	for(int iCount=0; iCount <= 8; iCount++)
+			{
+          		CRGB c(BLUE, GREEN, RED);
+          		leds[i] = c;
+        	}
+
+        	break;
+		}
+    }
+    FastLED.show();
 }
 
-void updateStrip()
+void updateStrip(InputData *input)
 {
+	int ledsAan = map(input->PRESSURE_RAW_DATA, 0, 650, 0, NUM_LEDS);
 
+for (int i = 0; i < NUM_LEDS; i++) {
+	if (i < ledsAan) {
+		setStrip(i, 150, 0, 0);
+  	} else {
+  		setStrip(i, 0, 0, 0);
+ 	}
+}
 }
 
 // RECIEVE
@@ -153,11 +179,6 @@ void createPacket(PACKAGETYPECODE type)
 	networkBand.send(&packet);
 }
 
-void updateStrip(InputData *input)
-{
-	unsigned long now = millis();
-}
-
 // Handelt alle ESP-now paketten af
 void handleNetwork(const uint8_t *mac, const Packet *packet)
 {
@@ -167,3 +188,5 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 	handleResponseBand((InputData*)packet->data);
 	updateStrip((InputData*)packet->data);
 }
+
+CRGB leds[NUM_LEDS];

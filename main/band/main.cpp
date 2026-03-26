@@ -26,6 +26,15 @@ void setup()
 	networkBand.onReceive(handleNetwork);
 	networkBand.begin(pinoutBand);
 	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+
+	// pinMode(LED_STATUS, OUTPUT);
+
+	// #ifdef LED_STATUS
+	// 	digitalWrite(LED_STATUS, HIGH);
+	// #endif
+
+	// Initialiseer de ledstrip
+	FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, BGR>(leds, NUM_LEDS);
 }
 
 void loop()

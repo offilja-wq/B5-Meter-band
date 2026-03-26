@@ -11,6 +11,10 @@
 #define NTC_SENSOR_PIN 2
 #define PRESSURE_SENSOR_PIN 3
 
+#define NUM_LEDS  8
+#define DATA_PIN  11 // DI verander naar goeie pin
+#define CLOCK_PIN 13 // CI verander naar goeie pin
+
 typedef enum : uint8_t 
 {
     NTC_DEAD_HIGH,
