@@ -27,7 +27,7 @@ SENSORS concludeSensors(InputData *input)
 	
 	switch (input->NTC_RAW_DATA)
 	{
-	case 42.001 ... 50.000:
+	case 42.001 ... 70.000:
 		Sensors.Ntc_result = NTC_DEAD_HIGH;
 		break;
 	case 38.001 ... 42.000:
@@ -39,7 +39,7 @@ SENSORS concludeSensors(InputData *input)
 	case 35.501 ... 37.500:
 		Sensors.Ntc_result = NTC_NORMAL;
 		break;
-	case 34.000 ... 35.500:
+	case 25.000 ... 35.500:
 		Sensors.Ntc_result = NTC_TOO_LOW;
 		break;
 	default:
@@ -49,44 +49,41 @@ SENSORS concludeSensors(InputData *input)
 
 	switch (input->PRESSURE_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
 	{
-	case 42.001 ... 50.000:
+	case 500 ... 700:
 		Sensors.Pressure_result = PRESSURE_BREATH_IN;
 		break;
-	case 38.001 ... 42.000:
+	case 100 ... 499:
 		Sensors.Pressure_result = PRESSURE_BREATH_OUT;
 		break;
-	case 24.000 ... 38.000:
-		Sensors.Pressure_result = PRESSURE_NO_SKIN_CONTACT
-		break;
 	default:
-		Sensors.Pressure_result = PRESSURE_NO_REALISTIC_DATA;
+		Sensors.Pressure_result = PRESSURE_NO_SKIN_CONTACT;
 		break;
 	}
 
 		switch (input->HEARTBEAT_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
 	{
-	case 42.001 ... 50.000:
+	case 181 ... 220:
 		Sensors.Heartbeat_result = HEARTBEAT_DEADLY_HIGH;
 		break;
-	case 38.001 ... 42.000:
+	case 151 ... 180:
 		Sensors.Heartbeat_result = HEARTBEAT_PROBLEMATICALLY_HIGH;
 		break;
-	case 37.501 ... 38.000:
+	case 101 ... 150:
 		Sensors.Heartbeat_result = HEARTBEAT_HIGH;
 		break;
-	case 35.501 ... 37.500:
+	case 60 ... 100:
 		Sensors.Heartbeat_result = HEARTBEAT_NORMAL;
 		break;
-	case 34.000 ... 35.500:
+	case 40 ... 59:
 		Sensors.Heartbeat_result = HEARTBEAT_LOW;
 		break;
-	case 34.000 ... 35.500:
+	case 30 ... 39:
 		Sensors.Heartbeat_result = HEARTBEAT_PROBLEMATICALLY_LOW;
 		break;
-	case 34.000 ... 35.500:
+	case 5 ... 29:
 		Sensors.Heartbeat_result = HEARTBEAT_DEADLY_LOW;
 		break;
-	case 34.000 ... 35.500:
+	case 0 ... 4:
 		Sensors.Heartbeat_result = HEARTBEAT_NO_SKIN_CONTACT;
 		break;
 	default:
@@ -96,22 +93,22 @@ SENSORS concludeSensors(InputData *input)
 
 	switch (input->SATURATION_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
 	{
-	case 42.001 ... 50.000:
+	case 61 ... 70:
 		Sensors.Saturation_Result = SATURATION_TOO_HIGH;
 		break;
-	case 38.001 ... 42.000:
+	case 51 ... 60:
 		Sensors.Saturation_Result = SATURATION_HIGH;
 		break;
-	case 37.501 ... 38.000:
+	case 41 ... 50:
 		Sensors.Saturation_Result = SATURATION_NORMAL;
 		break;
-	case 35.501 ... 37.500:
+	case 31 ... 40:
 		Sensors.Saturation_Result = SATURATION_LOW;
 		break;
-	case 34.000 ... 35.500:
+	case 11 ... 20:
 		Sensors.Saturation_Result = SATURATION_TOO_LOW;
 		break;
-	case 34.000 ... 35.500:
+	case 10 ... 0:
 		Sensors.Saturation_Result = SATURATION_NO_SKIN_CONTACT;
 		break;
 	default:
