@@ -108,7 +108,7 @@ SENSORS concludeSensors(InputData *input)
 	case 11 ... 20:
 		Sensors.Saturation_Result = SATURATION_TOO_LOW;
 		break;
-	case 10 ... 0:
+	case 9 ... 10:
 		Sensors.Saturation_Result = SATURATION_NO_SKIN_CONTACT;
 		break;
 	default:

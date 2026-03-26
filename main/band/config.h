@@ -8,12 +8,12 @@
 
 #define PIN_LED_BAND 15
 
-#define NTC_SENSOR_PIN 2
-#define PRESSURE_SENSOR_PIN 3
+#define NTC_SENSOR_PIN 1
+#define PRESSURE_SENSOR_PIN 10
 
 #define NUM_LEDS  8
-#define DATA_PIN  11 // DI verander naar goeie pin
-#define CLOCK_PIN 13 // CI verander naar goeie pin
+#define DATA_PIN  3 // DI verander naar goeie pin
+#define CLOCK_PIN 5 // CI verander naar goeie pin
 
 typedef enum : uint8_t 
 {

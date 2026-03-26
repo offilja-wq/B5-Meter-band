@@ -49,7 +49,7 @@ typedef enum : uint8_t
     SATURATION_NO_REALISTIC_DATA
 } SATURATION_RESULT;
 
-typedef struct SENSORS
+typedef struct
 {
     NTC_RESULT Ntc_result;
     PRESSURE_RESULT Pressure_result;
@@ -59,4 +59,4 @@ typedef struct SENSORS
     uint16_t PRESSURE_RAW_DATA;
     uint8_t HEARTBEAT_RAW_DATA;
     uint16_t SATURATION_RAW_DATA;
-};
+} SENSORS;
