@@ -7,5 +7,3 @@
 #define PIN_DATA 13
 
 #define NUM_LEDS 10
-
-CRGB leds[NUM_LEDS] = {0};     // Software gamma mode.

@@ -1,10 +1,11 @@
 #include "Arduino.h"
 
 #include "config.h"
-#include "function.h
+#include "function.h"
 
 #include <MCUFRIEND_kbv.h>
 #include <Adafruit_GFX.h>
+#include <SoftwareSerial.h>
 
 MCUFRIEND_kbv tft;
 
@@ -16,6 +17,14 @@ typedef struct
   uint16_t SATURATION_RAW_DATA;
 } InputData;
 
+CRGB leds[NUM_LEDS] = {0};     // Software gamma mode.
+
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(11, 12);
+
+InputData data;
+#define START_BYTE 0xAA
+
 // Kleuren
 #define ZWART     0x0000
 #define WIT       0xFFFF
@@ -26,12 +35,6 @@ typedef struct
 #define DGGRIJS   0x2104
 #define ROZE      0xF813
 #define LICHTROZE 0xFF18
-
-#include <SoftwareSerial.h>
-SoftwareSerial mySerial(11, 12);
-
-InputData data;
-#define START_BYTE 0xAA
 
 // Grafiek instellingen
 #define GRAFIEK_X   35
