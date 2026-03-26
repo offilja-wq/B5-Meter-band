@@ -6,6 +6,11 @@
 
 #define PIN_LED_RECIEVER 22
 
+#define START_BYTE 0xAA
+#define TXD2 17
+#define RXD2 16
+#define ADC_PIN 34
+
 typedef enum : uint8_t 
 {
     NTC_DEAD_HIGH,
@@ -49,7 +54,7 @@ typedef enum : uint8_t
     SATURATION_NO_REALISTIC_DATA
 } SATURATION_RESULT;
 
-typedef struct SENSORS
+typedef struct
 {
     NTC_RESULT Ntc_result;
     PRESSURE_RESULT Pressure_result;
@@ -57,6 +62,6 @@ typedef struct SENSORS
     SATURATION_RESULT Saturation_Result;
     uint16_t NTC_RAW_DATA;
     uint16_t PRESSURE_RAW_DATA;
-    uint8_t HEARTBEAT_RAW_DATA;
+    uint16_t HEARTBEAT_RAW_DATA;
     uint16_t SATURATION_RAW_DATA;
-};
+} SENSORS;

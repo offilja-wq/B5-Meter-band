@@ -9,6 +9,8 @@
 // Locatie idetificatie voor debuggen
 static const char *TAG = "MAIN";
 
+CRGB leds[NUM_LEDS] = {0}; 
+
 // Netwerk class instansieren
 Networking &networkBand = Networking::getInstance();
 // Identiteit struct instansieren
@@ -26,6 +28,11 @@ void setup()
 	networkBand.onReceive(handleNetwork);
 	networkBand.begin(pinoutBand);
 	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+
+	FastLED.addLeds<APA102, DATA_PIN, CLOCK_PIN, RGB>(leds, NUM_LEDS);
+
+	digitalWrite(PIN_LED_BAND, 1);
+	delay(10000);
 }
 
 void loop()

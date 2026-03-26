@@ -14,6 +14,8 @@ void printInput(const InputData *input);
 
 void handleResponseReciever(InputData *input);
 
+void updateData(SENSORS);
+
 void createPacket(PACKAGETYPECODE type);
 
 void updateDisplay(InputData *input);

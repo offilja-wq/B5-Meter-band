@@ -11,6 +11,10 @@
 #define NTC_SENSOR_PIN 2
 #define PRESSURE_SENSOR_PIN 3
 
+#define NUM_LEDS 8
+#define DATA_PIN 39
+#define CLOCK_PIN 40
+
 typedef enum : uint8_t 
 {
     NTC_DEAD_HIGH,
@@ -54,10 +58,14 @@ typedef enum : uint8_t
     SATURATION_NO_REALISTIC_DATA
 } SATURATION_RESULT;
 
-struct SENSORS
+typedef struct
 {
     NTC_RESULT Ntc_result;
     PRESSURE_RESULT Pressure_result;
     HEARTBEAT_RESULT Heartbeat_result;
     SATURATION_RESULT Saturation_Result;
-};
+    uint16_t NTC_RAW_DATA;              // Place Filler
+    uint16_t PRESSURE_RAW_DATA;         // Place Filler
+    uint16_t HEARTBEAT_RAW_DATA;         // Place Filler
+    uint16_t SATURATION_RAW_DATA;       // Place Filler
+} SENSORS;

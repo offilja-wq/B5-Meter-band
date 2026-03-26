@@ -118,7 +118,12 @@ SENSORS concludeSensors(InputData *input)
 		Sensors.Saturation_Result = SATURATION_NO_REALISTIC_DATA;
 		break;
 	}
-	
+
+	Sensors.NTC_RAW_DATA = input->NTC_RAW_DATA;
+	Sensors.PRESSURE_RAW_DATA = input->PRESSURE_RAW_DATA;
+	Sensors.HEARTBEAT_RAW_DATA = input->HEARTBEAT_RAW_DATA;
+	Sensors.SATURATION_RAW_DATA = input->SATURATION_RAW_DATA;
+
 	return Sensors;
 }
 
@@ -200,6 +205,10 @@ void handleResponseReciever(InputData *input)
 	{
 		case PACKAGETYPE_DATA_SEND:
 			createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+			
+			Serial2.write(START_BYTE);
+  			Serial2.write((u_int8_t*) &Sensors, sizeof(SENSORS));
+			
 			break;
 		case PACKAGETYPE_COMMAND_RESET:
 			esp_restart;
@@ -261,16 +270,6 @@ void createPacket(PACKAGETYPECODE type)
 
 	memcpy(packet.data, &currentInput, sizeof(InputData));
 	networkReciever.send(&packet);
-}
-
-void updateDisplay(InputData *input)
-{
-	unsigned long now = millis();
-}
-
-void updateStrip(InputData *input)
-{
-	unsigned long now = millis();
 }
 
 // Handelt alle ESP-now paketten af
