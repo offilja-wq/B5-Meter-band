@@ -16,10 +16,6 @@ void handleResponseReciever(InputData *input);
 
 void createPacket(PACKAGETYPECODE type);
 
-void updateDisplay(InputData *input);
-
-void updateStrip(InputData *input);
-
 void localSend(SENSORS *input);
 
 void handleNetwork(const uint8_t *mac, const Packet *packet);

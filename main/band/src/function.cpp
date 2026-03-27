@@ -36,20 +36,23 @@ int READ_SATURATION()
 void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
 {
 	switch(i) {
-    	case 1 ... 8 : {
+    	case 1 ... 8 : 
+		{
         	CRGB c(BLUE, GREEN, RED); 
         	leds[i-1] = c;
         	break;
 		}
-    	default: {
-        	for(int iCount=0; iCount <= 8; iCount++)
+    	case 100 :
+		{
+        	for(int iLocal=0; iLocal <= 8; iLocal++)
 			{
           		CRGB c(BLUE, GREEN, RED);
-          		leds[i] = c;
+          		leds[iLocal] = c;
         	}
 
         	break;
 		}
+
     }
     FastLED.show();
 }
@@ -98,7 +101,7 @@ void handleResponseBand(InputData *input)
 			break;
 		case PACKAGETYPE_COMMAND_RESET:
 			// Reset
-			esp_restart;
+			esp_reTstart;
 			break;
 		case PACKAGETYPE_CALL_ACKNOWLEDGE:
 			// Verwerk oproepbevestiging
@@ -132,7 +135,7 @@ void createPacket(PACKAGETYPECODE type)
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
 
-	currentInput.startOfCommunication = 01;
+	currentInput.TstartOfCommunication = 01;
 	currentInput.packageSize = sizeof(Packet)-1;
 	currentInput.sourceIdentity = 0x14;
 	currentInput.destinationIdentity = 0x15;

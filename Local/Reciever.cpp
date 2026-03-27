@@ -36,18 +36,14 @@ MCUFRIEND_kbv tft;
 #define SCHERM_B    240
 #define SCHERM_H    320
 
-// Potmeter
-//#define POTMETER_PIN A6
-//float potWaarde = 0.0;
-
 // Sinus variabelen
 int sinusX   = 0;
 int vorigeY  = 0;
 float hoek   = 0.0;
 
-// UART buffer
+// UART buf
 bool receiving = false;
-uint8_t buffer[sizeof(InputData)];
+uint8_t buf[sizeof(InputData)];
 uint8_t index = 0;
 
 void setup() 
@@ -121,10 +117,10 @@ void ontvangData()
     }
     else
     {
-      buffer[index++] = b;
+      buf[index++] = b;
       if (index >= sizeof(InputData))
       {
-        memcpy(&data, buffer, sizeof(InputData));
+        memcpy(&data, buf, sizeof(InputData));
         receiving = false;
         //Serial.println(data.HEARTBEAT_RAW_DATA); //debug
       }

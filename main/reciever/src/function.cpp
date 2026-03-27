@@ -266,16 +266,6 @@ void createPacket(PACKAGETYPECODE type)
 	networkReciever.send(&packet);
 }
 
-void updateDisplay(InputData *input)
-{
-	unsigned long now = millis();
-}
-
-void updateStrip(InputData *input)
-{
-	unsigned long now = millis();
-}
-
 void localSend(SENSORS *input)
 {
 	Serial2.write(START_BYTE);
