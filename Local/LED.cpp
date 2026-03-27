@@ -10,6 +10,8 @@ int WelkeLED; //1 is foutmelder, 2 is ademhaling
 
 int STATUS; //1 normaal, 2 probleem, 3 dood
 
+int AdemInUit; //0 is uit, 1 is midden, 2 is in
+
 void setStrip(int i, int b, int g, int r)
 {
     switch(i) {
@@ -42,13 +44,13 @@ void loop() {
   int buikademhaling = analogRead(A0);
     Serial.println(buikademhaling);
   if (buikademhaling >= 0 && buikademhaling <= 300) {
-    STATUS = 0;
+    AdemInUit = 0;
   }
-  else if (buikademhaling >= 301 && buikademhaling <= 400) {
-    STATUS = 1;
+  else if (buikademhaling >= 301 && buikademhaling <= 450) {
+    AdemInUit = 1;
   }
-  else if (buikademhaling >= 401 && buikademhaling <= 1000) {
-    STATUS = 2;
+  else if (buikademhaling >= 451 && buikademhaling <= 1000) {
+    AdemInUit = 2;
   }  
 
   unsigned long now = millis();
@@ -81,14 +83,14 @@ void loop() {
     case 2:         //Buikademhaling golf
       int ledsAan = scale(buikademhaling, 0, 600, 0, NUM_LEDS);
       for (int i = 0; i < NUM_LEDS; i++) {
-        if ((i < ledsAan) && (STATUS == 0)) { //normaal, blauw
-          setStrip(i, 0, 0, 150); 
+        if ((i < ledsAan) && (AdemInUit == 0)) { //uit wit
+          setStrip(i, 15, 20, 100); 
         } 
-        else if ((i < ledsAan) && (STATUS == 1)) { //low/high, paars
-          setStrip(i, 70, 0, 40); 
+        else if ((i < ledsAan) && (AdemInUit == 1)) { //midden lichtblauw
+          setStrip(i, 10, 10, 255); 
         }
-        else if ((i < ledsAan) && (STATUS == 2)) { //probleem, rood 
-          setStrip(i, 150, 0, 0); 
+        else if ((i < ledsAan) && (AdemInUit == 2)) { //in blauw
+          setStrip(i, 1, 1, 255); 
         } 
         else {
           setStrip(i, 0, 0, 0);
@@ -96,4 +98,47 @@ void loop() {
       }
       break;
   }
+// hier nog de formule voor gemiddelde ademhaling gebruiken voor pressure data normal enz
+  if (input->Pressure_result == PRESSURE_NORMAL ||
+      input->NTC_result == NTC_NORMAL ||
+      input->HEARTBEAT_result == HEARTBEAT_NORMAL ||
+      input->SATURATION_result == SATURATION_NORMAL) 
+  {
+    STATUS = 0;
+  }
+  else if (PRESSURE_LOW ||
+           input->Pressure_result == PRESSURE_HIGH ||
+           input->NTC_result == NTC_TOO_LOW ||
+           input->NTC_result == NTC_TOO_HIGH ||
+           input->HEARTBEAT_result == HEARTBEAT_LOW ||
+           input->HEARTBEAT_result == HEARTBEAT_HIGH ||
+           input->SATURATION_result == SATURATION_LOW ||
+           input->SATURATION_result == SATURATION_HIGH)
+  {
+    STATUS = 1;
+  }
+  else if (PRESSURE_DEADLY_LOW ||
+           input->Pressure_result == PRESSURE_PROBLEMATICALLY_LOW ||
+           input->NTC_result == NTC_DANGEROUS || 
+           input->NTC_result == NTC_DEAD_HIGH || 
+           input->HEARTBEAT_result == HEARTBEAT_DEADLY_LOW ||
+           input->HEARTBEAT_result == HEARTBEAT_PROBLEMATICALLY_LOW ||
+           input->HEARTBEAT_result == HEARTBEAT_DEADLY_HIGH ||
+           input->HEARTBEAT_result == HEARTBEAT_PROBLEMATICALLY_HIGH ||
+           input->SATURATION_result == SATURATION_TOO_LOW || 
+           input->SATURATION_result == SATURATION_TOO_HIGH) 
+  {
+    STATUS = 2;
+  }
+  else if (input->Pressure_result == PRESSURE_NO_REALISTIC_DATA ||
+           input->NTC_result == NTC_NO_REALISTIC_DATA || 
+           input->NTC_result == NTC_NO_SKIN_CONTACT ||
+           input->HEARTBEAT_result == HEARTBEAT_NO_SKIN_CONTACT ||
+           input->HEARTBEAT_result == HEARTBEAT_NO_REALISTIC_DATA ||
+           input->SATURATION_result == SATURATION_NO_REALISTIC_DATA ||
+           input->SATURATION_result == SATURATION_NO_SKIN_CONTACT) 
+  {
+    STATUS = 3;
+  }
+
 }
