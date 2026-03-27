@@ -202,8 +202,7 @@ void handleResponseReciever(InputData *input)
 	{
 		case PACKAGETYPE_DATA_SEND:
 			createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
-			Serial2.write(START_BYTE);
-  			Serial2.write((uint64_t*)Sensors, sizeof(Sensors));
+			localSend(&Sensors);
 			break;
 		case PACKAGETYPE_COMMAND_RESET:
 			esp_restart;
@@ -275,6 +274,12 @@ void updateDisplay(InputData *input)
 void updateStrip(InputData *input)
 {
 	unsigned long now = millis();
+}
+
+void localSend(SENSORS *input)
+{
+	Serial2.write(START_BYTE);
+  	Serial2.write((uint8_t*)input, sizeof(SENSORS));
 }
 
 // Handelt alle ESP-now paketten af

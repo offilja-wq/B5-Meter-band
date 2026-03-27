@@ -7,10 +7,11 @@
 #define PIN_LED_RECIEVER 22
 
 #define START_BYTE 0xAA
-#define RXD2 11
-#define TXD2 12
+#define RXD2 16
+#define TXD2 17
 
-// 25 to 27 connected to nano 10 to 12
+// 25 to 26 connected to nano 10 to 11
+// 27 connected to nano 12
 
 typedef enum : uint8_t 
 {
