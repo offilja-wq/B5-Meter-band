@@ -1,0 +1,36 @@
+int threshold = 550; // pas aan als nodig
+bool breathDetected = false; // om hertriggers te voorkomen
+unsigned long previousBreath = 0; // tijd van de vorige adem
+int currentFrequency = 0; // ademhalingen per minuut
+
+void setup() 
+{
+  Serial.begin(115200); // start serial communicatie
+}
+
+void loop() 
+{
+  int sensorValue = analogRead(A0); // Uuit opamp-druksensor schakeling aangesloten op A0
+  //Serial.println(sensorValue); // voor troubleshooting
+  calculateBreathRate(sensorValue);
+}
+
+void calculateBreathRate (int sensorValue)
+{
+  if (sensorValue < threshold && !breathDetected) // detecteer begin van een nieuwe ademhaling
+  {
+    unsigned long now = millis(); // huidige tijd
+    breathDetected = true; // adem in
+    if (previousBreath != 0) // niet bij de eerste ademhaling
+    {
+      unsigned long duration = now - previousBreath; // tijd tussen 2 ademhalingen in ms
+      currentFrequency = 60000 / duration; // omrekenen naar adem/minuut
+      Serial.println("Breath rate: " + String(currentFrequency) + " breath/min");
+    }
+    previousBreath = now; // update tijd van laatste ademhaling
+  }
+  if (sensorValue > threshold + 100) // reset trigger wanneer de sensorwaarde weer boven de drempel komt
+  {
+    breathDetected = false;  // adem uit
+  }
+}
