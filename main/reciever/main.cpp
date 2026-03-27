@@ -24,7 +24,7 @@ void setup()
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
 
-	Serial2.begin(9600, SERIAL_8N1, RXD2, TXD2);
+	Serial2.begin(115200, SERIAL_8N1, RXD2, TXD2);
 
 	// Op wat voor niveau ESP LOG zou loggens
 	esp_log_level_set("*", ESP_LOG_INFO);
@@ -42,7 +42,5 @@ void loop()
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 
-	delay(10);
+	delay(20);
 }
-
-

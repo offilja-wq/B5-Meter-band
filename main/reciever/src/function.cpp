@@ -195,7 +195,7 @@ void handleResponseReciever(InputData *input)
 		// WIP
 	{
 		createPacket(PACKAGETYPE_RETRANSMIT);
-		return;
+		// return;
 	}
 
 	switch (input->packageTypeCode)
@@ -278,6 +278,4 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 	//Local
 	handleResponseReciever((InputData*)packet->data);
 	printInput((InputData*)packet->data);
-	updateDisplay((InputData*)packet->data);
-	updateStrip((InputData*)packet->data);
 }

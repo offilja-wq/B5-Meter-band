@@ -96,12 +96,12 @@ void handleResponseBand(InputData *input)
 	switch(input->packageTypeCode)
 	{
 		case PACKAGETYPE_DATA_SEND:
-			// Verwerk data
-			createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+			// Reageer
+			createPacket(PACKAGETYPE_DATA_SEND);
 			break;
 		case PACKAGETYPE_COMMAND_RESET:
 			// Reset
-			esp_reTstart;
+			esp_restart;
 			break;
 		case PACKAGETYPE_CALL_ACKNOWLEDGE:
 			// Verwerk oproepbevestiging
@@ -135,7 +135,7 @@ void createPacket(PACKAGETYPECODE type)
 	// Controleer of de input is veranderd
 	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
 
-	currentInput.TstartOfCommunication = 01;
+	currentInput.startOfCommunication = 01;
 	currentInput.packageSize = sizeof(Packet)-1;
 	currentInput.sourceIdentity = 0x14;
 	currentInput.destinationIdentity = 0x15;
