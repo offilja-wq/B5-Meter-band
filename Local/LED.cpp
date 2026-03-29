@@ -85,8 +85,7 @@ void updateStatus() {
     }
 
     // STATUS 2 — gevaarlijke waarden
-    if (input->Pressure_result   == PRESSURE_DEADLY_LOW ||
-        input->Pressure_result   == PRESSURE_PROBLEMATICALLY_LOW ||
+    if (input->Pressure_result   == PRESSURE_DEAD ||
         input->NTC_result        == NTC_DANGEROUS ||
         input->NTC_result        == NTC_DEAD_HIGH ||
         input->HEARTBEAT_result  == HEARTBEAT_DEADLY_LOW ||
@@ -122,7 +121,7 @@ void showFoutmelder() {
         else if (STATUS == 1) {
             setStrip(i, (golf * 70), (golf * 40), 0); // oranje golf
         }
-        else if (STATUS == 2) {
+        else if (STATUS == 2 || STATUS == 3) {
             setStrip(i, knipper, 0, 0); // rood knipper
         }
     }
