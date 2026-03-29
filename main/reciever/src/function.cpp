@@ -9,6 +9,11 @@
 
 static const char *TAG = "MAIN";
 
+int threshold = 400; // pas aan als nodig
+bool breathDetected = false; // om hertriggers te voorkomen
+unsigned long previousBreath = 0; // tijd van de vorige adem
+int currentFrequency = 0; // ademhalingen per minuut
+
 SENSORS concludeSensors(InputData *input)
 {
 	SENSORS Sensors;
@@ -124,6 +129,24 @@ SENSORS concludeSensors(InputData *input)
 		break;
 	}
 	
+	if (input->PRESSURE_RAW_DATA < threshold && !breathDetected) // detecteer begin van een nieuwe ademhaling
+	{
+		unsigned long now = millis(); // huidige tijd
+		breathDetected = true; // adem in
+		if (previousBreath != 0) // niet bij de eerste ademhaling
+		{
+		unsigned long duration = now - previousBreath; // tijd tussen 2 ademhalingen in ms
+		currentFrequency = 60000 / duration; // omrekenen naar adem/minuut
+		Sensors.BREATHRATE = currentFrequency;
+		//Serial.println("Breath rate: " + String(currentFrequency) + " breath/min"); // debug
+		}
+		previousBreath = now; // update tijd van laatste ademhaling
+	}
+	if (input->PRESSURE_RAW_DATA > threshold + 100) // reset trigger wanneer de sensorwaarde weer boven de drempel komt
+	{
+		breathDetected = false;  // adem uit
+	}
+
 	return Sensors;
 }
 
