@@ -37,28 +37,24 @@ void updateBlokken()
   tft.setTextSize(2);
 
   // Blok 1 - Hartslag
-  tft.fillRect(191, 40, 98, 14, ZWART);
+  tft.fillRect(191, 40, 53, 14, ZWART);
   tft.setCursor(194, 40);
-  tft.print(data.HEARTBEAT_RAW_DATA);
-  tft.print(" BPM");
+  tft.print(data.HEARTRATE);
 
   // Blok 2 - Saturatie
-  tft.fillRect(191, 93, 98, 14, ZWART);
+  tft.fillRect(191, 93, 53, 14, ZWART);
   tft.setCursor(194, 93);
-  tft.print(data.PRESSURE_RAW_DATA); // nu tijdelijk als pressure om te testen
-  tft.print(" %");
+  tft.print(data.SATURATION);
 
   // Blok 3 - Temperatuur
-  tft.fillRect(191, 146, 98, 14, ZWART);
+  tft.fillRect(191, 146, 53, 14, ZWART);
   tft.setCursor(194, 146);
-  tft.print(data.NTC_RAW_DATA);
-  tft.print(" C");
+  tft.print(data.TEMPERATURE);
 
   // Blok 4 - Ademhaling
-  tft.fillRect(191, 199, 98, 14, ZWART);
+  tft.fillRect(191, 199, 53, 14, ZWART);
   tft.setCursor(194, 199);
-  tft.print(data.SATURATION_RAW_DATA); // tijdelijk als saturatie om te testen
-  tft.print(" B/M");
+  tft.print(data.BREATHRATE);
 }
 
 // Raster
@@ -119,7 +115,7 @@ void tekenRechterkant()
 {
   tft.setTextColor(ROZE);
   tft.setTextSize(1);
-  tft.setCursor(193, 8); 
+  tft.setCursor(193, 8);    
   tft.print("EXTRA INFO -");
 
   tft.drawRect(190, 20, 105, 41, GRIJS);
@@ -127,10 +123,27 @@ void tekenRechterkant()
   tft.drawRect(190, 126, 105, 41, GRIJS);
   tft.drawRect(190, 179, 105, 41, GRIJS);
 
-  tft.setCursor(193, 25); tft.print("Hartslag:");
-  tft.setCursor(193, 78); tft.print("Saturatie:");
-  tft.setCursor(193, 131); tft.print("Temperatuur:");
-  tft.setCursor(193, 184); tft.print("Ademhaling:");
+  tft.setCursor(193, 25);   
+  tft.print("Hartslag:");
+  tft.setCursor(193, 78);   
+  tft.print("Saturatie:");
+  tft.setCursor(193, 131);  
+  tft.print("Temperatuur:");
+  tft.setCursor(193, 184); 
+  tft.print("Ademhaling:");
+
+  // Eenheden, om flikkeringen te verminderen
+  tft.setTextColor(LICHTROZE);
+  tft.setTextSize(2);
+
+  tft.setCursor(244, 40);   
+  tft.print("BPM");
+  tft.setCursor(244, 93);   
+  tft.print("%");
+  tft.setCursor(244, 146);  
+  tft.print("C");
+  tft.setCursor(244, 199);  
+  tft.print("B/M");
 }
 
 void setup() 

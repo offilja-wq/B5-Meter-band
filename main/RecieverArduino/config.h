@@ -55,6 +55,10 @@ typedef struct
   PRESSURE_RESULT Pressure_result;
   HEARTBEAT_RESULT Heartbeat_result;
   SATURATION_RESULT Saturation_Result;
+  uint8_t TEMPERATURE;
+  uint8_t BREATHRATE;
+  uint8_t HEARTRATE;
+  uint8_t SATURATION;
   uint16_t NTC_RAW_DATA;
   uint16_t PRESSURE_RAW_DATA;
   uint16_t HEARTBEAT_RAW_DATA;
@@ -62,8 +66,6 @@ typedef struct
 } SENSORS;
 
 SENSORS data;
-
-
 #define START_BYTE 0xAA
 SoftwareSerial mySerial(12, 11); // RX, TX
 
