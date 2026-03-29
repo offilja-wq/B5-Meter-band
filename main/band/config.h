@@ -8,6 +8,7 @@
 
 #include <Wire.h>
 #include "MAX30105.h"
+#include "heartRate.h"
 #include "spo2_algorithm.h"
 
 // Led builtin
@@ -32,13 +33,13 @@
 
 typedef struct
 {
-    uint32_t irBuffer[100];
-    uint32_t redBuffer[100];
-    int32_t bufferLength;
-    int32_t spo2;
-    int8_t validSPO2;
-    int32_t heartRate;
-    int8_t validHeartRate;
+    const byte RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
+    byte rates[4]; //Array of heart rates
+    byte rateSpot = 0;
+    long lastBeat = 0; //Time at which the last beat occurred
+
+    float beatsPerMinute;
+    int beatAvg;
 } SRC_SENSORS;
 
 typedef enum : uint8_t 
@@ -86,6 +87,7 @@ typedef enum : uint8_t
 
 struct SENSORS
 {
+    bool vingerContact;
     NTC_RESULT Ntc_result;
     PRESSURE_RESULT Pressure_result;
     HEARTBEAT_RESULT Heartbeat_result;

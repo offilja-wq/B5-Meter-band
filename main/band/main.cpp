@@ -27,7 +27,7 @@ void setup()
 	networkBand.begin(pinoutBand);
 	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 
-	startSensor();
+	// startSensor();
 
 	// pinMode(LED_STATUS, OUTPUT);
 

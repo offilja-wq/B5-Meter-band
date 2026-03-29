@@ -16,25 +16,14 @@ SRC_SENSORS Src_Sensors;
 // Activeer sensoren
 void startSensor()
 {
-	while (!particleSensor.begin(Wire, I2C_SPEED_FAST));
- 	
-	particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
-  	particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
-  	particleSensor.setPulseAmplitudeGreen(0); //Turn off Green LED
-
-	while (Serial.available() == 0);
-  		Serial.read();
-
-    Src_Sensors.bufferLength = 100;
-
-	for (byte i = 0; i < Src_Sensors.bufferLength; i++)
+	if (!particleSensor.begin(Wire, I2C_SPEED_FAST)) //Use default I2C port, 400kHz speed
 	{
-		Src_Sensors.redBuffer[i] = particleSensor.getRed();
-		Src_Sensors.irBuffer[i] = particleSensor.getIR();
-		particleSensor.nextSample();
+		while (1);
 	}
 
- 	 maxim_heart_rate_and_oxygen_saturation(Src_Sensors.irBuffer, Src_Sensors.bufferLength, Src_Sensors.redBuffer, &Src_Sensors.spo2, &Src_Sensors.validSPO2, &Src_Sensors.heartRate, &Src_Sensors.validHeartRate);
+	particleSensor.setup(); //Configure sensor with default settings
+	particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+	particleSensor.setPulseAmplitudeGreen(0); //Turn off Green LED
 }
 
 // Lees NTC
@@ -49,60 +38,43 @@ uint16_t READ_PRESSURE()
     return analogRead(PRESSURE_SENSOR_PIN);
 }
 
-
-
 // Lees Heartbeat
 uint8_t READ_HEARTBEAT()
 {
-	while(!Src_Sensors.validHeartRate)
+	if (checkForBeat(particleSensor.getIR()) == true)
 	{
-		for (byte i = 25; i < 100; i++)
-		{
-		Src_Sensors.redBuffer[i - 25] = Src_Sensors.redBuffer[i];
-		Src_Sensors.irBuffer[i - 25] = Src_Sensors.irBuffer[i];
-		}
+		//We sensed a beat!
+		long delta = millis() - Src_Sensors.lastBeat;
+		Src_Sensors.lastBeat = millis();
 
-		for (byte i = 75; i < 100; i++)
-		{
-		Src_Sensors.redBuffer[i] = particleSensor.getRed();
-		Src_Sensors.irBuffer[i] = particleSensor.getIR();
-		particleSensor.nextSample();
-		}
+		Src_Sensors.beatsPerMinute = 60 / (delta / 1000.0);
 
-    	maxim_heart_rate_and_oxygen_saturation(Src_Sensors.irBuffer, Src_Sensors.bufferLength, Src_Sensors.redBuffer, &Src_Sensors.spo2, &Src_Sensors.validSPO2, &Src_Sensors.heartRate, &Src_Sensors.validHeartRate);
+		if (Src_Sensors.beatsPerMinute < 255 && Src_Sensors.beatsPerMinute > 20)
+		{
+		Src_Sensors.rates[Src_Sensors.rateSpot++] = (byte)Src_Sensors.beatsPerMinute; //Store this reading in the array
+		Src_Sensors.rateSpot %= Src_Sensors.RATE_SIZE; //Wrap variable
+
+		//Take average of readings
+		Src_Sensors.beatAvg = 0;
+		for (byte x = 0 ; x < Src_Sensors.RATE_SIZE ; x++)
+			Src_Sensors.beatAvg += Src_Sensors.rates[x];
+		Src_Sensors.beatAvg /= Src_Sensors.RATE_SIZE;
+		}
 	}
-	
-	return Src_Sensors.heartRate;
+
+	return Src_Sensors.beatsPerMinute;
 
 }
 
 // Lees Saturation
 uint8_t READ_SATURATION()
 {
-	while(!Src_Sensors.validSPO2)
-	{
-		for (byte i = 25; i < 100; i++)
-		{
-			Src_Sensors.redBuffer[i - 25] = Src_Sensors.redBuffer[i];
-			Src_Sensors.irBuffer[i - 25] = Src_Sensors.irBuffer[i];
-		}
-
-		for (byte i = 75; i < 100; i++)
-		{
-			Src_Sensors.redBuffer[i] = particleSensor.getRed();
-			Src_Sensors.irBuffer[i] = particleSensor.getIR();
-			particleSensor.nextSample();
-		}
-
-		maxim_heart_rate_and_oxygen_saturation(Src_Sensors.irBuffer, Src_Sensors.bufferLength, Src_Sensors.redBuffer, &Src_Sensors.spo2, &Src_Sensors.validSPO2, &Src_Sensors.heartRate, &Src_Sensors.validHeartRate);
-	}
-
-	return Src_Sensors.spo2;
+	return particleSensor.getRed();
 }
 
 bool checkVingerContact()
 {
-    return particleSensor.getIR() >= 50000;
+	return (particleSensor.getIR() < 50000);
 }
 
 void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
@@ -124,7 +96,6 @@ void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
 
         	break;
 		}
-
     }
     FastLED.show();
 }
@@ -228,8 +199,8 @@ void createPacket(PACKAGETYPECODE type)
 			// Verwerk gegevensverzending
 			currentInput.NTC_RAW_DATA = READ_NTC();
 			currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
-			currentInput.HEARTBEAT_RAW_DATA = READ_HEARTBEAT();
-			currentInput.SATURATION_RAW_DATA = READ_SATURATION();
+			// currentInput.HEARTBEAT_RAW_DATA = READ_HEARTBEAT();
+			// currentInput.SATURATION_RAW_DATA = READ_SATURATION();
 
 			currentInput.packageCount = currentInput.packageCount+1;
 			currentInput.packageTypeCode = type;

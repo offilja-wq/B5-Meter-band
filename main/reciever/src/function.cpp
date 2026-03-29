@@ -14,17 +14,20 @@ SENSORS concludeSensors(InputData *input)
 	SENSORS Sensors;
 	
 	// Input
+	input->vingerContact;
 	input->NTC_RAW_DATA;
 	input->PRESSURE_RAW_DATA;
 	input->HEARTBEAT_RAW_DATA;
 	input->SATURATION_RAW_DATA;
 
 	// Output
+	Sensors.vingerContact;
 	Sensors.Ntc_result;
 	Sensors.Pressure_result;
 	Sensors.Heartbeat_result;
 	Sensors.Saturation_Result;
 
+	Sensors.vingerContact = input->vingerContact;
 	Sensors.NTC_RAW_DATA = input->NTC_RAW_DATA;
 	Sensors.PRESSURE_RAW_DATA = input->PRESSURE_RAW_DATA;
 	Sensors.HEARTBEAT_RAW_DATA = input->HEARTBEAT_RAW_DATA;
@@ -65,7 +68,7 @@ SENSORS concludeSensors(InputData *input)
 		break;
 	}
 
-		switch (input->HEARTBEAT_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
+	switch (input->HEARTBEAT_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
 	{
 	case 181 ... 220:
 		Sensors.Heartbeat_result = HEARTBEAT_DEADLY_HIGH;
@@ -140,6 +143,9 @@ void printInput(InputData *input)
 		String(input->packageTypeCode)+				"\t"+
 		String(input->NTC_RAW_DATA)+				"\t"+
 		String(input->PRESSURE_RAW_DATA)+			"\t"+
+		String(input->HEARTBEAT_RAW_DATA)+			"\t"+
+		String(input->SATURATION_RAW_DATA)+			"\t"+
+		String(input->vingerContact)+				"\t"+
 		String(input->PriorityState)+				"\t"+
 		String(input->endOfTransmission)+			"\t"+
 		String(input->longitudinalRedundancyCheck)+ "\t"
@@ -254,6 +260,7 @@ void createPacket(PACKAGETYPECODE type)
 		case PACKAGETYPE_DATA_SEND:
 			// Verwerk gegevensverzending
 			previousInput = currentInput;
+			currentInput.packageTypeCode = PACKAGETYPE_CALL_ACKNOWLEDGE;
 			break;
 		case PACKAGETYPE_CALL_STATE:
 			// Verwerk oproepstatus
