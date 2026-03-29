@@ -2,17 +2,64 @@
 #include <Adafruit_GFX.h>
 #include <SoftwareSerial.h>
 
-typedef struct 
+typedef enum : uint8_t 
 {
+  NTC_DEAD_HIGH,
+  NTC_DANGEROUS,
+  NTC_TOO_HIGH,
+  NTC_NORMAL,
+  NTC_TOO_LOW,
+  NTC_NO_SKIN_CONTACT,
+  NTC_NO_REALISTIC_DATA
+} NTC_RESULT;
+
+typedef enum : uint8_t
+{
+  PRESSURE_BREATH_IN,
+  PRESSURE_BREATH_OUT,
+  PRESSURE_NO_SKIN_CONTACT,
+  PRESSURE_NO_REALISTIC_DATA
+} PRESSURE_RESULT;
+
+typedef enum : uint8_t
+{
+  HEARTBEAT_DEADLY_HIGH,
+  HEARTBEAT_PROBLEMATICALLY_HIGH,
+  HEARTBEAT_HIGH,
+  HEARTBEAT_NORMAL,
+  HEARTBEAT_LOW,
+  HEARTBEAT_PROBLEMATICALLY_LOW,
+  HEARTBEAT_DEADLY_LOW,
+  HEARTBEAT_NO_SKIN_CONTACT,
+  HEARTBEAT_NO_REALISTIC_DATA
+} HEARTBEAT_RESULT;
+
+typedef enum : uint8_t
+{
+  SATURATION_TOO_HIGH,
+  SATURATION_HIGH,
+  SATURATION_NORMAL,
+  SATURATION_LOW,
+  SATURATION_TOO_LOW,
+  SATURATION_NO_SKIN_CONTACT,
+  SATURATION_NO_REALISTIC_DATA
+} SATURATION_RESULT;
+
+typedef struct
+{
+  NTC_RESULT Ntc_result;
+  PRESSURE_RESULT Pressure_result;
+  HEARTBEAT_RESULT Heartbeat_result;
+  SATURATION_RESULT Saturation_Result;
   uint16_t NTC_RAW_DATA;
   uint16_t PRESSURE_RAW_DATA;
   uint16_t HEARTBEAT_RAW_DATA;
   uint16_t SATURATION_RAW_DATA;
-} InputData;
+} SENSORS;
 
-InputData data;
+SENSORS data;
 #define START_BYTE 0xAA
-SoftwareSerial mySerial(11, 12); // RX, TX
+SoftwareSerial mySerial(12, 11); // RX, TX
 
 MCUFRIEND_kbv tft;
 
@@ -39,21 +86,20 @@ MCUFRIEND_kbv tft;
 // Sinus variabelen
 int sinusX   = 0;
 int vorigeY  = 0;
-float hoek   = 0.0;
 
-// UART buf
+// UART buffer
 bool receiving = false;
-uint8_t buf[sizeof(InputData)];
+uint8_t buf[sizeof(SENSORS)];
 uint8_t index = 0;
 
 void setup() 
 {
-  Serial.begin(9600);
-  mySerial.begin(9600);
+  Serial.begin(115200);
+  mySerial.begin(9600); // 9600, kut met 115200
 
   uint16_t ID = tft.readID();
-  Serial.print("Scherm ID: 0x");
-  Serial.println(ID, HEX);
+  // Serial.print("Scherm ID: 0x");
+  // Serial.println(ID, HEX);
   
   if (ID == 0xD3D3) ID = 0x9486;
   tft.begin(ID);
@@ -70,35 +116,29 @@ void setup()
 
 void loop() 
 {
-  // Potmeter uitlezen en blokken updaten
-  //potWaarde = map(analogRead(POTMETER_PIN), 0, 1023, 0, 100);
   ontvangData();
   updateBlokken();
 
-  // Sinus berekenen
-  int middenY   = GRAFIEK_Y + (GRAFIEK_H / 2);
-  //int amplitude = (GRAFIEK_H / 2) - 70;
-  int amplitude = map(data.PRESSURE_RAW_DATA, 0, 4095, 0, (GRAFIEK_H / 2) - 5);
-  int nieuweY = middenY - (int)(sin(hoek) * amplitude);
+  // Sensor waarde schalen naar scherm
+  int nieuweY = map(data.PRESSURE_RAW_DATA, 0, 700, GRAFIEK_Y + GRAFIEK_H - 2, GRAFIEK_Y + 2);
 
   // Lijn tekenen
   tft.drawLine(sinusX - 1, vorigeY, sinusX, nieuweY, ROOD);
 
+  // Update vorige punt
   vorigeY = nieuweY;
-  hoek   += 0.15;
+
+  // Volgende X positie
   sinusX++;
 
   // Reset als einde grafiek bereikt
   if (sinusX > GRAFIEK_X + GRAFIEK_B - 1) 
   {
     sinusX  = GRAFIEK_X + 1;
-    hoek    = 0.0;
-    vorigeY = middenY;
 
     tft.fillRect(GRAFIEK_X + 1, GRAFIEK_Y + 1, GRAFIEK_B - 2, GRAFIEK_H - 2, LICHTROZE);
     tekenRaster();
   }
-  //delay(100);
 }
 
 // UART data lezen
@@ -107,6 +147,7 @@ void ontvangData()
   while (mySerial.available())
   {
     uint8_t b = mySerial.read();
+    // Serial.println(receiving); // debug
     if (!receiving)
     {
       if (b == START_BYTE)
@@ -118,11 +159,11 @@ void ontvangData()
     else
     {
       buf[index++] = b;
-      if (index >= sizeof(InputData))
+      if (index >= sizeof(SENSORS))
       {
-        memcpy(&data, buf, sizeof(InputData));
+        memcpy(&data, buf, sizeof(SENSORS));
         receiving = false;
-        //Serial.println(data.HEARTBEAT_RAW_DATA); //debug
+        // Serial.println(data.PRESSURE_RAW_DATA); // debug
       }
     }
   }
@@ -131,27 +172,32 @@ void ontvangData()
 // Update blokken
 void updateBlokken() 
 {
-  // Blok 1 - Hartslag
-  tft.fillRect(191, 38, 75, 12, ZWART);
   tft.setTextColor(LICHTROZE);
   tft.setTextSize(2);
+
+  // Blok 1 - Hartslag
+  tft.fillRect(191, 40, 98, 14, ZWART);
   tft.setCursor(194, 40);
   tft.print(data.HEARTBEAT_RAW_DATA);
   tft.print(" BPM");
 
   // Blok 2 - Saturatie
-  tft.fillRect(191, 120, 75, 12, ZWART);
-  tft.setTextColor(LICHTROZE);
-  tft.setCursor(194, 115);
-  tft.print(data.SATURATION_RAW_DATA);
+  tft.fillRect(191, 93, 98, 14, ZWART);
+  tft.setCursor(194, 93);
+  tft.print(data.PRESSURE_RAW_DATA); // nu tijdelijk als pressure om te testen
   tft.print(" %");
 
   // Blok 3 - Temperatuur
-  tft.fillRect(191, 193, 75, 12, ZWART);
-  tft.setTextColor(LICHTROZE);
-  tft.setCursor(194, 190);
+  tft.fillRect(191, 146, 98, 14, ZWART);
+  tft.setCursor(194, 146);
   tft.print(data.NTC_RAW_DATA);
   tft.print(" C");
+
+  // Blok 4 - Ademhaling
+  tft.fillRect(191, 199, 98, 14, ZWART);
+  tft.setCursor(194, 199);
+  tft.print(data.SATURATION_RAW_DATA); // tijdelijk als saturatie om te testen
+  tft.print(" B/M");
 }
 
 // Raster
@@ -187,20 +233,21 @@ void tekenGrafiekOutline()
     int y = GRAFIEK_Y + (GRAFIEK_H / 5) * i;
     int waarde = 100 - (i * 20);
     tft.setCursor(10, y - 3);
-    if (waarde < 100) tft.print(" ");
     tft.print(waarde);
   }
 
   // X-as labels
-  tft.setCursor(GRAFIEK_X, GRAFIEK_Y + GRAFIEK_H + 5);
+  tft.setCursor(GRAFIEK_X - 2, GRAFIEK_Y + GRAFIEK_H + 6); 
   tft.print("0");
-  tft.setCursor(GRAFIEK_X + GRAFIEK_B - 6, GRAFIEK_Y + GRAFIEK_H + 5);
-  tft.print("t");
+  tft.setCursor(GRAFIEK_X + 32, GRAFIEK_Y + GRAFIEK_H + 6); 
+  tft.print("tijd in sec");
+  tft.setCursor(GRAFIEK_X + GRAFIEK_B - 6, GRAFIEK_Y + GRAFIEK_H + 6); 
+  tft.print("10");
 
   // Titel
   tft.setTextColor(ROZE);
-  tft.setCursor(GRAFIEK_X + 45, 8);
-  tft.print("GRAFIEK");
+  tft.setCursor(GRAFIEK_X + 34, 8); 
+  tft.print("Ademhaling");
 
   // Scheidingslijn
   tft.drawFastVLine(183, 0, SCHERM_H, BLAUW);
@@ -211,15 +258,16 @@ void tekenRechterkant()
 {
   tft.setTextColor(ROZE);
   tft.setTextSize(1);
-  tft.setCursor(193, 8);
+  tft.setCursor(193, 8); 
   tft.print("EXTRA INFO -");
 
-  tft.drawRect(190, 20, 90, 50, GRIJS);
-  tft.drawRect(190, 95, 90, 50, GRIJS);
-  tft.drawRect(190, 170, 90, 50, GRIJS);
+  tft.drawRect(190, 20, 105, 41, GRIJS);
+  tft.drawRect(190, 73, 105, 41, GRIJS);
+  tft.drawRect(190, 126, 105, 41, GRIJS);
+  tft.drawRect(190, 179, 105, 41, GRIJS);
 
-  tft.setTextColor(ROZE);
   tft.setCursor(193, 25); tft.print("Hartslag:");
-  tft.setCursor(193, 100); tft.print("Saturatie:");
-  tft.setCursor(193, 175); tft.print("Temperatuur:");
+  tft.setCursor(193, 78); tft.print("Saturatie:");
+  tft.setCursor(193, 131); tft.print("Temperatuur:");
+  tft.setCursor(193, 184); tft.print("Ademhaling:");
 }
