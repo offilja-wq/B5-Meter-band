@@ -64,6 +64,6 @@ typedef struct
     SATURATION_RESULT Saturation_Result;
     uint16_t NTC_RAW_DATA;
     uint16_t PRESSURE_RAW_DATA;
-    uint16_t HEARTBEAT_RAW_DATA;
-    uint16_t SATURATION_RAW_DATA;
+    uint8_t HEARTBEAT_RAW_DATA;
+    uint8_t SATURATION_RAW_DATA;
 } SENSORS;

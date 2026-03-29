@@ -16,6 +16,7 @@ void loop()
 }
 
 void calculateBreathRate (int sensorValue)
+
 {
   if (sensorValue < threshold && !breathDetected) // detecteer begin van een nieuwe ademhaling
   {

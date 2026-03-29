@@ -9,9 +9,19 @@
 
 extern CRGB leds[NUM_LEDS];
 
-int READ_NTC();
+extern SRC_SENSORS Src_Sensors;
 
-int READ_PRESSURE();
+void startSensor();
+
+uint16_t READ_NTC();
+
+uint16_t READ_PRESSURE();
+
+uint8_t READ_HEARTBEAT();
+
+uint8_t READ_SATURATION();
+
+bool checkVingerContact();
 
 void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE);
 

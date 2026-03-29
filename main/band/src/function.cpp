@@ -9,28 +9,100 @@
 
 static const char *TAG = "MAIN";
 
-int READ_NTC()
+MAX30105 particleSensor;
+
+SRC_SENSORS Src_Sensors;
+
+// Activeer sensoren
+void startSensor()
 {
-    // Lees NTC
+	while (!particleSensor.begin(Wire, I2C_SPEED_FAST));
+ 	
+	particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
+  	particleSensor.setPulseAmplitudeRed(0x0A); //Turn Red LED to low to indicate sensor is running
+  	particleSensor.setPulseAmplitudeGreen(0); //Turn off Green LED
+
+	while (Serial.available() == 0);
+  		Serial.read();
+
+    Src_Sensors.bufferLength = 100;
+
+	for (byte i = 0; i < Src_Sensors.bufferLength; i++)
+	{
+		Src_Sensors.redBuffer[i] = particleSensor.getRed();
+		Src_Sensors.irBuffer[i] = particleSensor.getIR();
+		particleSensor.nextSample();
+	}
+
+ 	 maxim_heart_rate_and_oxygen_saturation(Src_Sensors.irBuffer, Src_Sensors.bufferLength, Src_Sensors.redBuffer, &Src_Sensors.spo2, &Src_Sensors.validSPO2, &Src_Sensors.heartRate, &Src_Sensors.validHeartRate);
+}
+
+// Lees NTC
+uint16_t READ_NTC()
+{
     return analogRead(NTC_SENSOR_PIN);
 }
 
-int READ_PRESSURE()
+// Lees Pressure
+uint16_t READ_PRESSURE()
 {
-    // Lees Pressure
     return analogRead(PRESSURE_SENSOR_PIN);
 }
 
-int READ_HEARTBEAT()
+
+
+// Lees Heartbeat
+uint8_t READ_HEARTBEAT()
 {
-	// Lees Heartbeat
-	return 0;
+	while(!Src_Sensors.validHeartRate)
+	{
+		for (byte i = 25; i < 100; i++)
+		{
+		Src_Sensors.redBuffer[i - 25] = Src_Sensors.redBuffer[i];
+		Src_Sensors.irBuffer[i - 25] = Src_Sensors.irBuffer[i];
+		}
+
+		for (byte i = 75; i < 100; i++)
+		{
+		Src_Sensors.redBuffer[i] = particleSensor.getRed();
+		Src_Sensors.irBuffer[i] = particleSensor.getIR();
+		particleSensor.nextSample();
+		}
+
+    	maxim_heart_rate_and_oxygen_saturation(Src_Sensors.irBuffer, Src_Sensors.bufferLength, Src_Sensors.redBuffer, &Src_Sensors.spo2, &Src_Sensors.validSPO2, &Src_Sensors.heartRate, &Src_Sensors.validHeartRate);
+	}
+	
+	return Src_Sensors.heartRate;
+
 }
 
-int READ_SATURATION()
+// Lees Saturation
+uint8_t READ_SATURATION()
 {
-	// Lees Saturation
-	return 0;
+	while(!Src_Sensors.validSPO2)
+	{
+		for (byte i = 25; i < 100; i++)
+		{
+			Src_Sensors.redBuffer[i - 25] = Src_Sensors.redBuffer[i];
+			Src_Sensors.irBuffer[i - 25] = Src_Sensors.irBuffer[i];
+		}
+
+		for (byte i = 75; i < 100; i++)
+		{
+			Src_Sensors.redBuffer[i] = particleSensor.getRed();
+			Src_Sensors.irBuffer[i] = particleSensor.getIR();
+			particleSensor.nextSample();
+		}
+
+		maxim_heart_rate_and_oxygen_saturation(Src_Sensors.irBuffer, Src_Sensors.bufferLength, Src_Sensors.redBuffer, &Src_Sensors.spo2, &Src_Sensors.validSPO2, &Src_Sensors.heartRate, &Src_Sensors.validHeartRate);
+	}
+
+	return Src_Sensors.spo2;
+}
+
+bool checkVingerContact()
+{
+    return particleSensor.getIR() >= 50000;
 }
 
 void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)

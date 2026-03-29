@@ -51,7 +51,8 @@ typedef struct // Maak een variabele InputData
     uint16_t NTC_RAW_DATA;
     uint16_t PRESSURE_RAW_DATA;
     uint8_t HEARTBEAT_RAW_DATA;
-    uint16_t SATURATION_RAW_DATA;
+    uint8_t SATURATION_RAW_DATA;
+    bool vingerContact;
 
     bool PriorityState;
 
