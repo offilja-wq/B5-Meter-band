@@ -2,9 +2,15 @@
 
 #include <Arduino.h>
 
+#include <FastLED.h>
 #include <MCUFRIEND_kbv.h>
 #include <Adafruit_GFX.h>
 #include <SoftwareSerial.h>
+
+#define PIN_DATA 13
+#define NUM_LEDS 10
+
+#define NUM_LEDS 10
 
 typedef enum : uint8_t 
 {
@@ -19,21 +25,26 @@ typedef enum : uint8_t
 
 typedef enum : uint8_t
 {
-  PRESSURE_BREATH_IN,
-  PRESSURE_BREATH_OUT,
+  PRESSURE_DEAD_SLOW,
+  PRESSURE_TOO_SLOW,
+  PRESSURE_SLOW,
+  PRESSURE_NORMAL,
+  PRESSURE_FAST,
+  PRESSURE_TOO_FAST,
+  PRESSURE_DEAD_FAST,
   PRESSURE_NO_SKIN_CONTACT,
   PRESSURE_NO_REALISTIC_DATA
 } PRESSURE_RESULT;
 
 typedef enum : uint8_t
 {
-  HEARTBEAT_DEADLY_HIGH,
+  HEARTBEAT_DEAD_HIGH,
   HEARTBEAT_PROBLEMATICALLY_HIGH,
   HEARTBEAT_HIGH,
   HEARTBEAT_NORMAL,
   HEARTBEAT_LOW,
   HEARTBEAT_PROBLEMATICALLY_LOW,
-  HEARTBEAT_DEADLY_LOW,
+  HEARTBEAT_DEAD_LOW,
   HEARTBEAT_NO_SKIN_CONTACT,
   HEARTBEAT_NO_REALISTIC_DATA
 } HEARTBEAT_RESULT;
@@ -55,15 +66,15 @@ typedef struct
   NTC_RESULT Ntc_result;
   PRESSURE_RESULT Pressure_result;
   HEARTBEAT_RESULT Heartbeat_result;
-  SATURATION_RESULT Saturation_Result;
+  SATURATION_RESULT Saturation_result;
   uint8_t TEMPERATURE;
   uint8_t BREATHRATE;
   uint8_t HEARTRATE;
   uint8_t SATURATION;
-  uint16_t NTC_RAW_DATA;
+  int16_t NTC_RAW_DATA;
   uint16_t PRESSURE_RAW_DATA;
-  uint16_t HEARTBEAT_RAW_DATA;
-  uint16_t SATURATION_RAW_DATA;
+  uint8_t HEARTBEAT_RAW_DATA;
+  uint8_t SATURATION_RAW_DATA;
 } SENSORS;
 
 SENSORS data;

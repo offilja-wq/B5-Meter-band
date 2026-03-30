@@ -88,9 +88,9 @@ void updateStatus() {
     if (input->Pressure_result   == PRESSURE_DEAD ||
         input->NTC_result        == NTC_DANGEROUS ||
         input->NTC_result        == NTC_DEAD_HIGH ||
-        input->HEARTBEAT_result  == HEARTBEAT_DEADLY_LOW ||
+        input->HEARTBEAT_result  == HEARTBEAT_DEAD_LOW ||
         input->HEARTBEAT_result  == HEARTBEAT_PROBLEMATICALLY_LOW ||
-        input->HEARTBEAT_result  == HEARTBEAT_DEADLY_HIGH ||
+        input->HEARTBEAT_result  == HEARTBEAT_DEAD_HIGH ||
         input->HEARTBEAT_result  == HEARTBEAT_PROBLEMATICALLY_HIGH ||
         input->SATURATION_result == SATURATION_TOO_LOW ||
         input->SATURATION_result == SATURATION_TOO_HIGH)
@@ -109,7 +109,7 @@ void updateStatus() {
         input->SATURATION_result == SATURATION_NO_SKIN_CONTACT)
     {
         STATUS = 3;
-        return;
+        return STATUS;
     }
 }
 

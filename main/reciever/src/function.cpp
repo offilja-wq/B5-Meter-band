@@ -60,23 +60,10 @@ SENSORS concludeSensors(InputData *input)
 		break;
 	}
 
-	switch (input->PRESSURE_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
-	{
-	case 500 ... 700:
-		Sensors.Pressure_result = PRESSURE_BREATH_IN;
-		break;
-	case 100 ... 499:
-		Sensors.Pressure_result = PRESSURE_BREATH_OUT;
-		break;
-	default:
-		Sensors.Pressure_result = PRESSURE_NO_SKIN_CONTACT;
-		break;
-	}
-
 	switch (input->HEARTBEAT_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
 	{
 	case 181 ... 220:
-		Sensors.Heartbeat_result = HEARTBEAT_DEADLY_HIGH;
+		Sensors.Heartbeat_result = HEARTBEAT_DEAD_HIGH;
 		break;
 	case 151 ... 180:
 		Sensors.Heartbeat_result = HEARTBEAT_PROBLEMATICALLY_HIGH;
@@ -94,7 +81,7 @@ SENSORS concludeSensors(InputData *input)
 		Sensors.Heartbeat_result = HEARTBEAT_PROBLEMATICALLY_LOW;
 		break;
 	case 5 ... 29:
-		Sensors.Heartbeat_result = HEARTBEAT_DEADLY_LOW;
+		Sensors.Heartbeat_result = HEARTBEAT_DEAD_LOW;
 		break;
 	case 0 ... 4:
 		Sensors.Heartbeat_result = HEARTBEAT_NO_SKIN_CONTACT;
@@ -145,7 +132,25 @@ SENSORS concludeSensors(InputData *input)
 	if (input->PRESSURE_RAW_DATA > threshold + 100) // reset trigger wanneer de sensorwaarde weer boven de drempel komt
 	{
 		breathDetected = false;  // adem uit
+		Sensors.Pressure_result = PRESSURE_NO_SKIN_CONTACT;
 	}
+
+	switch (Sensors.BREATHRATE) // INPUT AANPASSEN NAAR JUISTE WAARDEN
+	{
+	case 0 ... 100:
+		Sensors.Pressure_result = PRESSURE_NORMAL;
+		break;
+	case 101 ... 499:
+		//Sensors.Pressure_result = PRESSURE_BREATH_OUT;
+		break;
+	default:
+		Sensors.Pressure_result = PRESSURE_NO_REALISTIC_DATA;
+		break;
+	}
+
+	float Temp_NTC = 0.000;
+	Temp_NTC = (input->NTC_RAW_DATA*(15/4096))+30;
+	Sensors.TEMPERATURE = Temp_NTC;
 
 	return Sensors;
 }

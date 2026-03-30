@@ -42,5 +42,5 @@ void loop()
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 
-	delay(20);
+	// delay(20);
 }

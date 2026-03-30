@@ -12,16 +12,16 @@
 #include "spo2_algorithm.h"
 
 // Led builtin
-#define PIN_LED_BAND 15
+#define PIN_LED_BAND 2
 
 // analog sensors
-#define NTC_SENSOR_PIN 1
-#define PRESSURE_SENSOR_PIN 10
+#define NTC_SENSOR_PIN 32
+#define PRESSURE_SENSOR_PIN 33
 
 // ledstrip
 #define NUM_LEDS  8
-#define DATA_PIN  3 // DI verander naar goeie pin
-#define CLOCK_PIN 5 // CI verander naar goeie pin
+#define DATA_PIN  25 // DI verander naar goeie pin
+#define CLOCK_PIN 26 // CI verander naar goeie pin
 
 // MAX30105
 #define ledBrightness 60
@@ -40,6 +40,7 @@ typedef struct
 
     float beatsPerMinute;
     int beatAvg;
+    int redLed;
 } SRC_SENSORS;
 
 typedef enum : uint8_t 
@@ -55,21 +56,24 @@ typedef enum : uint8_t
 
 typedef enum : uint8_t
 {
-    PRESSURE_BREATH_IN,
-    PRESSURE_BREATH_OUT,
+    PRESSURE_TOO_SLOW,
+    PRESSURE_SLOW,
+    PRESSURE_NORMAL,
+    PRESSURE_FAST,
+    PRESSURE_TOO_FAST,
     PRESSURE_NO_SKIN_CONTACT,
     PRESSURE_NO_REALISTIC_DATA
 } PRESSURE_RESULT;
 
 typedef enum : uint8_t
 {
-    HEARTBEAT_DEADLY_HIGH,
+    HEARTBEAT_DEAD_HIGH,
     HEARTBEAT_PROBLEMATICALLY_HIGH,
     HEARTBEAT_HIGH,
     HEARTBEAT_NORMAL,
     HEARTBEAT_LOW,
     HEARTBEAT_PROBLEMATICALLY_LOW,
-    HEARTBEAT_DEADLY_LOW,
+    HEARTBEAT_DEAD_LOW,
     HEARTBEAT_NO_SKIN_CONTACT,
     HEARTBEAT_NO_REALISTIC_DATA
 } HEARTBEAT_RESULT;
@@ -84,20 +88,3 @@ typedef enum : uint8_t
     SATURATION_NO_SKIN_CONTACT,
     SATURATION_NO_REALISTIC_DATA
 } SATURATION_RESULT;
-
-struct SENSORS
-{
-    bool vingerContact;
-    NTC_RESULT Ntc_result;
-    PRESSURE_RESULT Pressure_result;
-    HEARTBEAT_RESULT Heartbeat_result;
-    SATURATION_RESULT Saturation_Result;
-    uint8_t TEMPERATURE;
-    uint8_t BREATHRATE;
-    uint8_t HEARTRATE;
-    uint8_t SATURATION;
-    uint16_t NTC_RAW_DATA;
-    uint16_t PRESSURE_RAW_DATA;
-    uint8_t HEARTBEAT_RAW_DATA;
-    uint8_t SATURATION_RAW_DATA;
-};
