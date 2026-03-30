@@ -13,6 +13,11 @@ MAX30105 particleSensor;
 
 SRC_SENSORS Src_Sensors;
 
+// Variabelen voor LED strip
+CRGB leds[NUM_LEDS];
+int buikademhaling;
+int AdemInUit;
+
 // Activeer sensoren
 void startSensor()
 {
@@ -100,16 +105,34 @@ void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
     FastLED.show();
 }
 
-void updateStrip(InputData *input)
+void updateStrip(InputData *input) //voor de ademhalingstrip
 {
-	int ledsAan = map(input->PRESSURE_RAW_DATA, 0, 650, 0, NUM_LEDS);
+	// Update de strip op basis van de input data
+	buikademhaling = map(input->PRESSURE_RAW_DATA, 0, 650, 0, NUM_LEDS);
 
-	setStrip(100, 0, 0, 0);
+	// Status van ademhaling voor kleuren
+	if (buikademhaling <= 300) {
+        AdemInUit = 0;
+    }
+    else if (buikademhaling <= 450) {
+        AdemInUit = 1;
+    }
+    else {
+        AdemInUit = 2;
+    }
 
-	for (int i = 0; i < ledsAan; i++)
-	{
-		setStrip(i, 150, 150, 255);
-	}
+	// Code voor ademhaling
+   int ledsAan = map(input->PRESSURE_RAW_DATA, 0, 650, 0, NUM_LEDS);
+
+    for (int i = 0; i < NUM_LEDS; i++) {
+        if (i < ledsAan) {
+            if (AdemInUit == 0)      setStrip(i, 15, 20, 100);  // uit wit
+            else if (AdemInUit == 1) setStrip(i, 10, 10, 255);  // midden lichtblauw
+            else                     setStrip(i, 1, 1, 255);    // in blauw
+        } else {
+            setStrip(i, 0, 0, 0);
+        }
+    }
 }
 
 // RECIEVE
@@ -231,5 +254,3 @@ void handleNetwork(const uint8_t *mac, const Packet *packet)
 	handleResponseBand((InputData*)packet->data);
 	updateStrip((InputData*)packet->data);
 }
-
-CRGB leds[NUM_LEDS];
