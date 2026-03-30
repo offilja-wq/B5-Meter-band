@@ -39,7 +39,7 @@ void setStrip(int i, int b, int g, int r)
 
 
 void formulesLED(InputData *input) {
-    buikademhaling = input->PRESSURE_RAW_DATA, 0, 650, 0, NUM_LEDS
+    buikademhaling = map(input->PRESSURE_RAW_DATA, 0, 650, 0, NUM_LEDS);
 
     now = millis();
     knipper = ((now / 100) % 2 == 0) ? 10 : 0;

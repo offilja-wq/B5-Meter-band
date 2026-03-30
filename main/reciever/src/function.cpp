@@ -93,22 +93,22 @@ SENSORS concludeSensors(InputData *input)
 
 	switch (input->SATURATION_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
 	{
-	case 61 ... 70:
+	case 101 ... 102:
 		Sensors.Saturation_Result = SATURATION_TOO_HIGH;
 		break;
-	case 51 ... 60:
+	case 100:
 		Sensors.Saturation_Result = SATURATION_HIGH;
 		break;
-	case 41 ... 50:
+	case 95 ... 99:
 		Sensors.Saturation_Result = SATURATION_NORMAL;
 		break;
-	case 31 ... 40:
+	case 91 ... 94:
 		Sensors.Saturation_Result = SATURATION_LOW;
 		break;
-	case 11 ... 20:
+	case 88 ... 90:
 		Sensors.Saturation_Result = SATURATION_TOO_LOW;
 		break;
-	case 9 ... 10:
+	case 9 ... 30:
 		Sensors.Saturation_Result = SATURATION_NO_SKIN_CONTACT;
 		break;
 	default:
