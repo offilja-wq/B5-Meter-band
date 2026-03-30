@@ -199,7 +199,7 @@ void createPacket(PACKAGETYPECODE type)
 			// Verwerk gegevensverzending
 			currentInput.NTC_RAW_DATA = READ_NTC();
 			currentInput.PRESSURE_RAW_DATA = READ_PRESSURE();
-			currentInput.HEARTBEAT_RAW_DATA = READ_HEARTBEAT();
+			// currentInput.HEARTBEAT_RAW_DATA = READ_HEARTBEAT();
 			// currentInput.SATURATION_RAW_DATA = READ_SATURATION();
 
 			currentInput.packageCount = currentInput.packageCount+1;
@@ -213,7 +213,7 @@ void createPacket(PACKAGETYPECODE type)
 		case PACKAGETYPE_CALL_ACKNOWLEDGE:
 			// Verwerk oproepbevestiging
 			currentInput.packageCount = currentInput.packageCount+1;
-			currentInput.packageTypeCode = type;
+			currentInput.packageTypeCode = PACKAGETYPE_DATA_SEND;
 			break;
 	}
 

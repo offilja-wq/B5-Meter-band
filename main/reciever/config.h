@@ -65,7 +65,7 @@ typedef struct
     NTC_RESULT Ntc_result;
     PRESSURE_RESULT Pressure_result;
     HEARTBEAT_RESULT Heartbeat_result;
-    SATURATION_RESULT Saturation_Result;
+    SATURATION_RESULT Saturation_result;
     uint8_t TEMPERATURE;
     uint8_t BREATHRATE;
     uint8_t HEARTRATE;

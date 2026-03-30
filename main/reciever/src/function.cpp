@@ -30,7 +30,7 @@ SENSORS concludeSensors(InputData *input)
 	Sensors.Ntc_result;
 	Sensors.Pressure_result;
 	Sensors.Heartbeat_result;
-	Sensors.Saturation_Result;
+	Sensors.Saturation_result;
 
 	Sensors.vingerContact = input->vingerContact;
 	Sensors.NTC_RAW_DATA = input->NTC_RAW_DATA;
@@ -94,25 +94,25 @@ SENSORS concludeSensors(InputData *input)
 	switch (input->SATURATION_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
 	{
 	case 61 ... 70:
-		Sensors.Saturation_Result = SATURATION_TOO_HIGH;
+		Sensors.Saturation_result = SATURATION_TOO_HIGH;
 		break;
 	case 51 ... 60:
-		Sensors.Saturation_Result = SATURATION_HIGH;
+		Sensors.Saturation_result = SATURATION_HIGH;
 		break;
 	case 41 ... 50:
-		Sensors.Saturation_Result = SATURATION_NORMAL;
+		Sensors.Saturation_result = SATURATION_NORMAL;
 		break;
 	case 31 ... 40:
-		Sensors.Saturation_Result = SATURATION_LOW;
+		Sensors.Saturation_result = SATURATION_LOW;
 		break;
 	case 11 ... 20:
-		Sensors.Saturation_Result = SATURATION_TOO_LOW;
+		Sensors.Saturation_result = SATURATION_TOO_LOW;
 		break;
 	case 9 ... 10:
-		Sensors.Saturation_Result = SATURATION_NO_SKIN_CONTACT;
+		Sensors.Saturation_result = SATURATION_NO_SKIN_CONTACT;
 		break;
 	default:
-		Sensors.Saturation_Result = SATURATION_NO_REALISTIC_DATA;
+		Sensors.Saturation_result = SATURATION_NO_REALISTIC_DATA;
 		break;
 	}
 	
@@ -225,7 +225,7 @@ void handleResponseReciever(InputData *input)
 	if ((Sensors.Ntc_result == NTC_NO_REALISTIC_DATA)||
 		(Sensors.Pressure_result == PRESSURE_NO_REALISTIC_DATA)||
 		(Sensors.Heartbeat_result == HEARTBEAT_NO_REALISTIC_DATA)||
-    	(Sensors.Saturation_Result == SATURATION_NO_REALISTIC_DATA))
+    	(Sensors.Saturation_result == SATURATION_NO_REALISTIC_DATA))
 		// WIP
 	{
 		createPacket(PACKAGETYPE_RETRANSMIT);
@@ -305,6 +305,7 @@ void localSend(SENSORS *input)
 {
 	Serial2.write(START_BYTE);
   	Serial2.write((uint8_t*)input, sizeof(SENSORS));
+	delay(50);
 }
 
 // Handelt alle ESP-now paketten af

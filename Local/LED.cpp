@@ -62,7 +62,7 @@ void updateStatus() {
 
     // STATUS 0 — alles normaal
     if (input->Pressure_result   == PRESSURE_NORMAL ||
-        input->NTC_result        == NTC_NORMAL ||
+        input->Ntc_result        == NTC_NORMAL ||
         input->HEARTBEAT_result  == HEARTBEAT_NORMAL ||
         input->SATURATION_result == SATURATION_NORMAL)
     {
@@ -73,8 +73,8 @@ void updateStatus() {
     // STATUS 1 — low/high
     if (input->Pressure_result   == PRESSURE_LOW ||
         input->Pressure_result   == PRESSURE_HIGH ||
-        input->NTC_result        == NTC_TOO_LOW ||
-        input->NTC_result        == NTC_TOO_HIGH ||
+        input->Ntc_result        == NTC_TOO_LOW ||
+        input->Ntc_result        == NTC_TOO_HIGH ||
         input->HEARTBEAT_result  == HEARTBEAT_LOW ||
         input->HEARTBEAT_result  == HEARTBEAT_HIGH ||
         input->SATURATION_result == SATURATION_LOW ||
@@ -86,8 +86,8 @@ void updateStatus() {
 
     // STATUS 2 — gevaarlijke waarden
     if (input->Pressure_result   == PRESSURE_DEAD ||
-        input->NTC_result        == NTC_DANGEROUS ||
-        input->NTC_result        == NTC_DEAD_HIGH ||
+        input->Ntc_result        == NTC_DANGEROUS ||
+        input->Ntc_result        == NTC_DEAD_HIGH ||
         input->HEARTBEAT_result  == HEARTBEAT_DEAD_LOW ||
         input->HEARTBEAT_result  == HEARTBEAT_PROBLEMATICALLY_LOW ||
         input->HEARTBEAT_result  == HEARTBEAT_DEAD_HIGH ||
@@ -101,8 +101,8 @@ void updateStatus() {
 
     // STATUS 3 — geen realistische data
     if (input->Pressure_result   == PRESSURE_NO_REALISTIC_DATA ||
-        input->NTC_result        == NTC_NO_REALISTIC_DATA ||
-        input->NTC_result        == NTC_NO_SKIN_CONTACT ||
+        input->Ntc_result        == NTC_NO_REALISTIC_DATA ||
+        input->Ntc_result        == NTC_NO_SKIN_CONTACT ||
         input->HEARTBEAT_result  == HEARTBEAT_NO_SKIN_CONTACT ||
         input->HEARTBEAT_result  == HEARTBEAT_NO_REALISTIC_DATA ||
         input->SATURATION_result == SATURATION_NO_REALISTIC_DATA ||

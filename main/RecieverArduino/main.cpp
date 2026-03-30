@@ -148,7 +148,7 @@ void updateBlokken()
   }
   else
   {
-    tft.fillRect(191, 40, 53, 14, ROOD);
+    tft.fillRect(191, 40, 53, 14, ZWART);
   }
 
   tft.setCursor(194, 40);
@@ -161,7 +161,7 @@ void updateBlokken()
   }
   else
   {
-    tft.fillRect(191, 93, 53, 14, ROOD);
+    tft.fillRect(191, 93, 53, 14, ZWART);
   }
 
   tft.fillRect(191, 93, 53, 14, ZWART);
@@ -319,10 +319,10 @@ void loop()
     tekenRaster();
   }
 
-  Serial.println(
-		String(data.NTC_RAW_DATA)+				"\t"+
-		String(data.PRESSURE_RAW_DATA)+			"\t"+
-		String(data.HEARTBEAT_RAW_DATA)+			"\t"+
-		String(data.SATURATION_RAW_DATA)+			"\t"
-	);
+  // Serial.println(
+	// 	String(data.NTC_RAW_DATA)+				"\t"+
+	// 	String(data.PRESSURE_RAW_DATA)+			"\t"+
+	// 	String(data.HEARTBEAT_RAW_DATA)+			"\t"+
+	// 	String(data.SATURATION_RAW_DATA)+			"\t"
+	// );
 }

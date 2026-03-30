@@ -71,7 +71,7 @@ typedef struct
   uint8_t BREATHRATE;
   uint8_t HEARTRATE;
   uint8_t SATURATION;
-  int16_t NTC_RAW_DATA;
+  uint16_t NTC_RAW_DATA;
   uint16_t PRESSURE_RAW_DATA;
   uint8_t HEARTBEAT_RAW_DATA;
   uint8_t SATURATION_RAW_DATA;
