@@ -61,7 +61,7 @@ typedef enum : uint8_t
 
 typedef struct
 {
-    bool vingerContact;
+    // bool vingerContact;
     NTC_RESULT Ntc_result;
     PRESSURE_RESULT Pressure_result;
     HEARTBEAT_RESULT Heartbeat_result;

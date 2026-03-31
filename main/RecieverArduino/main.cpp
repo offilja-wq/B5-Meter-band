@@ -299,7 +299,7 @@ void loop()
   updateBlokken();
 
   // Sensor waarde schalen naar scherm
-  int nieuweY = map(data.PRESSURE_RAW_DATA, 0, 700, GRAFIEK_Y + GRAFIEK_H - 2, GRAFIEK_Y + 2);
+  int nieuweY = map(data.PRESSURE_RAW_DATA, 0, 4096, GRAFIEK_Y + GRAFIEK_H - 2, GRAFIEK_Y + 2);
 
   // Lijn tekenen
   tft.drawLine(sinusX - 1, vorigeY, sinusX, nieuweY, ROOD);
@@ -318,11 +318,4 @@ void loop()
     tft.fillRect(GRAFIEK_X + 1, GRAFIEK_Y + 1, GRAFIEK_B - 2, GRAFIEK_H - 2, LICHTROZE);
     tekenRaster();
   }
-
-  // Serial.println(
-	// 	String(data.NTC_RAW_DATA)+				"\t"+
-	// 	String(data.PRESSURE_RAW_DATA)+			"\t"+
-	// 	String(data.HEARTBEAT_RAW_DATA)+			"\t"+
-	// 	String(data.SATURATION_RAW_DATA)+			"\t"
-	// );
 }

@@ -26,13 +26,13 @@ SENSORS concludeSensors(InputData *input)
 	input->SATURATION_RAW_DATA;
 
 	// Output
-	Sensors.vingerContact;
+	// Sensors.vingerContact;
 	Sensors.Ntc_result;
 	Sensors.Pressure_result;
 	Sensors.Heartbeat_result;
 	Sensors.Saturation_result;
 
-	Sensors.vingerContact = input->vingerContact;
+	// Sensors.vingerContact = input->vingerContact;
 	Sensors.NTC_RAW_DATA = input->NTC_RAW_DATA;
 	Sensors.PRESSURE_RAW_DATA = input->PRESSURE_RAW_DATA;
 	Sensors.HEARTBEAT_RAW_DATA = input->HEARTBEAT_RAW_DATA;
@@ -94,22 +94,22 @@ SENSORS concludeSensors(InputData *input)
 	switch (input->SATURATION_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
 	{
 	case 101 ... 102:
-		Sensors.Saturation_Result = SATURATION_TOO_HIGH;
+		Sensors.Saturation_result = SATURATION_TOO_HIGH;
 		break;
 	case 100:
-		Sensors.Saturation_Result = SATURATION_HIGH;
+		Sensors.Saturation_result = SATURATION_HIGH;
 		break;
 	case 95 ... 99:
-		Sensors.Saturation_Result = SATURATION_NORMAL;
+		Sensors.Saturation_result = SATURATION_NORMAL;
 		break;
 	case 91 ... 94:
-		Sensors.Saturation_Result = SATURATION_LOW;
+		Sensors.Saturation_result = SATURATION_LOW;
 		break;
 	case 88 ... 90:
-		Sensors.Saturation_Result = SATURATION_TOO_LOW;
+		Sensors.Saturation_result = SATURATION_TOO_LOW;
 		break;
 	case 9 ... 30:
-		Sensors.Saturation_Result = SATURATION_NO_SKIN_CONTACT;
+		Sensors.Saturation_result = SATURATION_NO_SKIN_CONTACT;
 		break;
 	default:
 		Sensors.Saturation_result = SATURATION_NO_REALISTIC_DATA;
@@ -305,6 +305,13 @@ void localSend(SENSORS *input)
 {
 	Serial2.write(START_BYTE);
   	Serial2.write((uint8_t*)input, sizeof(SENSORS));
+	
+	Serial.println(
+		String(input->NTC_RAW_DATA)+				"\t"+
+		String(input->PRESSURE_RAW_DATA)+			"\t"+
+		String(input->HEARTBEAT_RAW_DATA)+			"\t"+
+		String(input->SATURATION_RAW_DATA)+			"\t"
+		);
 	delay(50);
 }
 
