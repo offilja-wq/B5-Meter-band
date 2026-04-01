@@ -10,16 +10,16 @@
 static const char *TAG = "MAIN";
 
 // Netwerk class instansieren
-Networking &networkReciever = Networking::getInstance();
+Networking &networkReceiver = Networking::getInstance();
 // Identiteit struct instansieren
-Identity identityReciever;
-Pinout pinoutReciever;
+Identity identityReceiver;
+Pinout pinoutReceiver;
 
 void setup()
 {
 	// Identiteit eigenschappen`
-	identityReciever.type = IDENTITY_RECIEVER;
-	pinoutReciever.PIN_LED = PIN_LED_RECIEVER;
+	identityReceiver.type = IDENTITY_RECIEVER;
+	pinoutReceiver.PIN_LED = PIN_LED_RECIEVER;
 
 	Serial.begin(115200);
 	Serial.setDebugOutput(true);
@@ -30,15 +30,15 @@ void setup()
 	esp_log_level_set("*", ESP_LOG_INFO);
 
 	// Initialiseren van de netwerk instatie
-	networkReciever.setIdentity(identityReciever);
-	networkReciever.onReceive(handleNetwork);
-	networkReciever.begin(pinoutReciever);
+	networkReceiver.setIdentity(identityReceiver);
+	networkReceiver.onReceive(handleNetwork);
+	networkReceiver.begin(pinoutReceiver);
 	createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 }
 
 void loop()
 {
-	if (networkReciever.handlePing(&pinoutReciever)) {
+	if (networkReceiver.handlePing(&pinoutReceiver)) {
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 }

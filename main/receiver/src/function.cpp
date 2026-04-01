@@ -158,7 +158,7 @@ SENSORS concludeSensors(InputData *input)
 // RECIEVE
 void printInput(InputData *input)
 {
-	Networking &networkReciever = Networking::getInstance();
+	Networking &networkReceiver = Networking::getInstance();
 
 	unsigned long now = millis();
 
@@ -179,16 +179,16 @@ void printInput(InputData *input)
 		String(input->longitudinalRedundancyCheck)+ "\t"
 	);
 
-	if (now - networkReciever.lastPacket >= 1000)
+	if (now - networkReceiver.lastPacket >= 1000)
 	{
 		Serial.println("No connection");
 	}
 }
 
-void handleResponseReciever(InputData *input)
+void handleResponseReceiver(InputData *input)
 {
-	Networking &networkReciever = Networking::getInstance();
-	Pinout pinoutReciever = networkReciever.getPinout();
+	Networking &networkReceiver = Networking::getInstance();
+	Pinout pinoutReceiver = networkReceiver.getPinout();
 	
 	unsigned long now = millis();
 
@@ -198,16 +198,16 @@ void handleResponseReciever(InputData *input)
 
 	if (newPacket)
 	{
-		networkReciever.lastPacket = now;
+		networkReceiver.lastPacket = now;
 		ResetSend = false;
 		oldPackageCount = input->packageCount;
-		digitalWrite(pinoutReciever.PIN_LED, (((now+networkReciever.lastPacket)/500)%2));
+		digitalWrite(pinoutReceiver.PIN_LED, (((now+networkReceiver.lastPacket)/500)%2));
 	} else {
-		digitalWrite(pinoutReciever.PIN_LED, 0);
+		digitalWrite(pinoutReceiver.PIN_LED, 0);
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 
-	if ((now-networkReciever.lastPacket) > 1000) 
+	if ((now-networkReceiver.lastPacket) > 1000) 
 	{
 		if(!ResetSend)
 		{
@@ -249,20 +249,20 @@ void handleResponseReciever(InputData *input)
 			break;
 	}
 
-	networkReciever.lastPacket = now;
+	networkReceiver.lastPacket = now;
 }
 
 // TRANSMIT
 void createPacket(PACKAGETYPECODE type)
 {
-	Networking &networkReciever = Networking::getInstance();
-	Identity identityReciever;
+	Networking &networkReceiver = Networking::getInstance();
+	Identity identityReceiver;
 
 	static InputData previousInput;
 	static InputData currentInput;
 
 	static Packet packet = {
-		.identity = networkReciever.getIdentity(),
+		.identity = networkReceiver.getIdentity(),
 	};
 
 	// Controleer of de input is veranderd
@@ -278,7 +278,7 @@ void createPacket(PACKAGETYPECODE type)
 	currentInput.PriorityState = (inputChanged&&(currentInput.packageTypeCode == PACKAGETYPE_DATA_SEND));
 	
 	currentInput.endOfTransmission = 02;
-	currentInput.longitudinalRedundancyCheck = networkReciever.checkLRCOutput(&packet);
+	currentInput.longitudinalRedundancyCheck = networkReceiver.checkLRCOutput(&packet);
 	
 	switch(type)
 	{
@@ -298,7 +298,7 @@ void createPacket(PACKAGETYPECODE type)
 	}
 
 	memcpy(packet.data, &currentInput, sizeof(InputData));
-	networkReciever.send(&packet);
+	networkReceiver.send(&packet);
 }
 
 void localSend(SENSORS *input)
@@ -319,6 +319,6 @@ void localSend(SENSORS *input)
 void handleNetwork(const uint8_t *mac, const Packet *packet)
 {
 	//Local
-	handleResponseReciever((InputData*)packet->data);
+	handleResponseReceiver((InputData*)packet->data);
 	printInput((InputData*)packet->data);
 }

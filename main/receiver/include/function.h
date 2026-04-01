@@ -12,7 +12,7 @@ SENSORS concludeSensors(InputData *input);
 //RECIEVE
 void printInput(const InputData *input);
 
-void handleResponseReciever(InputData *input);
+void handleResponseReceiver(InputData *input);
 
 void createPacket(PACKAGETYPECODE type);
 
