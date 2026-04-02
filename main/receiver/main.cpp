@@ -6,7 +6,7 @@
 #include "Networking_by_B5.h"
 #include "esp_log.h"
 
-// Locatie idetificatie voor debuggen
+// Locatie identificatie voor debuggen
 static const char *TAG = "MAIN";
 
 // Netwerk class instansieren
