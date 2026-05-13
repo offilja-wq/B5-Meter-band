@@ -1,0 +1,324 @@
+#include "function.h"
+
+#include "Arduino.h"
+
+//lib def - only for this file
+
+#include "config.h"
+#include "Networking_by_B5.h"
+
+static const char *TAG = "MAIN";
+
+int threshold = 400; // pas aan als nodig
+bool breathDetected = false; // om hertriggers te voorkomen
+unsigned long previousBreath = 0; // tijd van de vorige adem
+int currentFrequency = 0; // ademhalingen per minuut
+
+SENSORS concludeSensors(InputData *input)
+{
+	SENSORS Sensors;
+	
+	// Input
+	input->vingerContact;
+	input->NTC_RAW_DATA;
+	input->PRESSURE_RAW_DATA;
+	input->HEARTBEAT_RAW_DATA;
+	input->SATURATION_RAW_DATA;
+
+	// Output
+	// Sensors.vingerContact;
+	Sensors.Ntc_result;
+	Sensors.Pressure_result;
+	Sensors.Heartbeat_result;
+	Sensors.Saturation_result;
+
+	// Sensors.vingerContact = input->vingerContact;
+	Sensors.NTC_RAW_DATA = input->NTC_RAW_DATA;
+	Sensors.PRESSURE_RAW_DATA = input->PRESSURE_RAW_DATA;
+	Sensors.HEARTBEAT_RAW_DATA = input->HEARTBEAT_RAW_DATA;
+	Sensors.SATURATION_RAW_DATA = input->SATURATION_RAW_DATA;
+	
+	switch (input->NTC_RAW_DATA)
+	{
+	case 43 ... 70:
+		Sensors.Ntc_result = NTC_DEAD_HIGH;
+		break;
+	case 40 ... 42:
+		Sensors.Ntc_result = NTC_DANGEROUS;
+		break;
+	case 38 ... 39:
+		Sensors.Ntc_result = NTC_TOO_HIGH;
+		break;
+	case 35 ... 37:
+		Sensors.Ntc_result = NTC_NORMAL;
+		break;
+	case 25 ... 34:
+		Sensors.Ntc_result = NTC_TOO_LOW;
+		break;
+	default:
+		Sensors.Ntc_result = NTC_NO_REALISTIC_DATA;
+		break;
+	}
+
+	switch (input->HEARTBEAT_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
+	{
+	case 181 ... 220:
+		Sensors.Heartbeat_result = HEARTBEAT_DEAD_HIGH;
+		break;
+	case 151 ... 180:
+		Sensors.Heartbeat_result = HEARTBEAT_PROBLEMATICALLY_HIGH;
+		break;
+	case 101 ... 150:
+		Sensors.Heartbeat_result = HEARTBEAT_HIGH;
+		break;
+	case 60 ... 100:
+		Sensors.Heartbeat_result = HEARTBEAT_NORMAL;
+		break;
+	case 40 ... 59:
+		Sensors.Heartbeat_result = HEARTBEAT_LOW;
+		break;
+	case 30 ... 39:
+		Sensors.Heartbeat_result = HEARTBEAT_PROBLEMATICALLY_LOW;
+		break;
+	case 5 ... 29:
+		Sensors.Heartbeat_result = HEARTBEAT_DEAD_LOW;
+		break;
+	case 0 ... 4:
+		Sensors.Heartbeat_result = HEARTBEAT_NO_SKIN_CONTACT;
+		break;
+	default:
+		Sensors.Heartbeat_result = HEARTBEAT_NO_REALISTIC_DATA;
+		break;
+	}
+
+	switch (input->SATURATION_RAW_DATA) // INPUT AANPASSEN NAAR JUISTE WAARDEN
+	{
+	case 101 ... 102:
+		Sensors.Saturation_result = SATURATION_TOO_HIGH;
+		break;
+	case 100:
+		Sensors.Saturation_result = SATURATION_HIGH;
+		break;
+	case 95 ... 99:
+		Sensors.Saturation_result = SATURATION_NORMAL;
+		break;
+	case 91 ... 94:
+		Sensors.Saturation_result = SATURATION_LOW;
+		break;
+	case 88 ... 90:
+		Sensors.Saturation_result = SATURATION_TOO_LOW;
+		break;
+	case 9 ... 30:
+		Sensors.Saturation_result = SATURATION_NO_SKIN_CONTACT;
+		break;
+	default:
+		Sensors.Saturation_result = SATURATION_NO_REALISTIC_DATA;
+		break;
+	}
+	
+	if (input->PRESSURE_RAW_DATA < threshold && !breathDetected) // detecteer begin van een nieuwe ademhaling
+	{
+		unsigned long now = millis(); // huidige tijd
+		breathDetected = true; // adem in
+		if (previousBreath != 0) // niet bij de eerste ademhaling
+		{
+		unsigned long duration = now - previousBreath; // tijd tussen 2 ademhalingen in ms
+		currentFrequency = 60000 / duration; // omrekenen naar adem/minuut
+		Sensors.BREATHRATE = currentFrequency;
+		//Serial.println("Breath rate: " + String(currentFrequency) + " breath/min"); // debug
+		}
+		previousBreath = now; // update tijd van laatste ademhaling
+	}
+	if (input->PRESSURE_RAW_DATA > threshold + 100) // reset trigger wanneer de sensorwaarde weer boven de drempel komt
+	{
+		breathDetected = false;  // adem uit
+		Sensors.Pressure_result = PRESSURE_NO_SKIN_CONTACT;
+	}
+
+	switch (Sensors.BREATHRATE) // INPUT AANPASSEN NAAR JUISTE WAARDEN
+	{
+	case 0 ... 100:
+		Sensors.Pressure_result = PRESSURE_NORMAL;
+		break;
+	case 101 ... 499:
+		//Sensors.Pressure_result = PRESSURE_BREATH_OUT;
+		break;
+	default:
+		Sensors.Pressure_result = PRESSURE_NO_REALISTIC_DATA;
+		break;
+	}
+
+	float Temp_NTC = 0.000;
+	Temp_NTC = (input->NTC_RAW_DATA*(15/4096))+30;
+	Sensors.TEMPERATURE = Temp_NTC;
+
+	return Sensors;
+}
+
+// RECIEVE
+void printInput(InputData *input)
+{
+	Networking &networkReceiver = Networking::getInstance();
+
+	unsigned long now = millis();
+
+  	Serial.println(
+		String(input->startOfCommunication)+		"\t"+
+		String(input->packageSize)+					"\t"+
+		String(input->sourceIdentity)+				"\t"+
+		String(input->destinationIdentity)+			"\t"+
+		String(input->packageCount)+				"\t"+
+		String(input->packageTypeCode)+				"\t"+
+		String(input->NTC_RAW_DATA)+				"\t"+
+		String(input->PRESSURE_RAW_DATA)+			"\t"+
+		String(input->HEARTBEAT_RAW_DATA)+			"\t"+
+		String(input->SATURATION_RAW_DATA)+			"\t"+
+		String(input->vingerContact)+				"\t"+
+		String(input->PriorityState)+				"\t"+
+		String(input->endOfTransmission)+			"\t"+
+		String(input->longitudinalRedundancyCheck)+ "\t"
+	);
+
+	if (now - networkReceiver.lastPacket >= 1000)
+	{
+		Serial.println("No connection");
+	}
+}
+
+void handleResponseReceiver(InputData *input)
+{
+	Networking &networkReceiver = Networking::getInstance();
+	Pinout pinoutReceiver = networkReceiver.getPinout();
+	
+	unsigned long now = millis();
+
+	uint32_t oldPackageCount;
+	bool ResetSend;
+	bool newPacket = (input->packageCount > oldPackageCount);
+
+	if (newPacket)
+	{
+		networkReceiver.lastPacket = now;
+		ResetSend = false;
+		oldPackageCount = input->packageCount;
+		digitalWrite(pinoutReceiver.PIN_LED, (((now+networkReceiver.lastPacket)/500)%2));
+	} else {
+		digitalWrite(pinoutReceiver.PIN_LED, 0);
+		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+	}
+
+	if ((now-networkReceiver.lastPacket) > 1000) 
+	{
+		if(!ResetSend)
+		{
+			createPacket(PACKAGETYPE_COMMAND_RESET);
+			ResetSend = true;
+		}
+
+		delay(50);
+		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+		return;
+	}
+
+	SENSORS Sensors = concludeSensors(input);
+
+	if ((Sensors.Ntc_result == NTC_NO_REALISTIC_DATA)||
+		(Sensors.Pressure_result == PRESSURE_NO_REALISTIC_DATA)||
+		(Sensors.Heartbeat_result == HEARTBEAT_NO_REALISTIC_DATA)||
+    	(Sensors.Saturation_result == SATURATION_NO_REALISTIC_DATA))
+		// WIP
+	{
+		createPacket(PACKAGETYPE_RETRANSMIT);
+		// return;
+	}
+
+	switch (input->packageTypeCode)
+	{
+		case PACKAGETYPE_DATA_SEND:
+			createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
+			localSend(&Sensors);
+			break;
+		case PACKAGETYPE_COMMAND_RESET:
+			esp_restart;
+			break;
+		case PACKAGETYPE_CALL_ACKNOWLEDGE:
+			createPacket(PACKAGETYPE_DATA_SEND);
+			break;
+		default:
+			createPacket(input->packageTypeCode);
+			break;
+	}
+
+	networkReceiver.lastPacket = now;
+}
+
+// TRANSMIT
+void createPacket(PACKAGETYPECODE type)
+{
+	Networking &networkReceiver = Networking::getInstance();
+	Identity identityReceiver;
+
+	static InputData previousInput;
+	static InputData currentInput;
+
+	static Packet packet = {
+		.identity = networkReceiver.getIdentity(),
+	};
+
+	// Controleer of de input is veranderd
+	bool inputChanged = memcmp(&currentInput, &previousInput, sizeof(InputData)) != 0;
+
+	currentInput.startOfCommunication = 01;
+	currentInput.packageSize = sizeof(Packet)-1;
+	currentInput.sourceIdentity = 0x14;
+	currentInput.destinationIdentity = 0x15;
+	currentInput.packageCount = currentInput.packageCount+1;
+
+	currentInput.packageTypeCode = type;
+	currentInput.PriorityState = (inputChanged&&(currentInput.packageTypeCode == PACKAGETYPE_DATA_SEND));
+	
+	currentInput.endOfTransmission = 02;
+	currentInput.longitudinalRedundancyCheck = networkReceiver.checkLRCOutput(&packet);
+	
+	switch(type)
+	{
+		case PACKAGETYPE_RETRANSMIT:
+			currentInput.packageTypeCode = PACKAGETYPE_CALL_ACKNOWLEDGE;
+			break;
+		case PACKAGETYPE_DATA_SEND:
+			// Verwerk gegevensverzending
+			previousInput = currentInput;
+			currentInput.packageTypeCode = PACKAGETYPE_CALL_ACKNOWLEDGE;
+			break;
+		case PACKAGETYPE_CALL_STATE:
+			// Verwerk oproepstatus
+			// WIP
+			currentInput.packageTypeCode = PACKAGETYPE_CALL_ACKNOWLEDGE;
+			break;
+	}
+
+	memcpy(packet.data, &currentInput, sizeof(InputData));
+	networkReceiver.send(&packet);
+}
+
+void localSend(SENSORS *input)
+{
+	Serial2.write(START_BYTE);
+  	Serial2.write((uint8_t*)input, sizeof(SENSORS));
+	
+	Serial.println(
+		String(input->NTC_RAW_DATA)+				"\t"+
+		String(input->PRESSURE_RAW_DATA)+			"\t"+
+		String(input->HEARTBEAT_RAW_DATA)+			"\t"+
+		String(input->SATURATION_RAW_DATA)+			"\t"
+		);
+	delay(50);
+}
+
+// Handelt alle ESP-now paketten af
+void handleNetwork(const uint8_t *mac, const Packet *packet)
+{
+	//Local
+	handleResponseReceiver((InputData*)packet->data);
+	printInput((InputData*)packet->data);
+}
