@@ -10,8 +10,6 @@
 #define PIN_DATA 13
 #define NUM_LEDS 10
 
-#define NUM_LEDS 10
-
 typedef enum : uint8_t 
 {
   NTC_DEAD_HIGH,

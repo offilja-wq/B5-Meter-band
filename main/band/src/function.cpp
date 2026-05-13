@@ -87,7 +87,7 @@ void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
 	switch(i) {
     	case 1 ... 8 : 
 		{
-        	CRGB c(BLUE, GREEN, RED); 
+        	CRGB c(RED, GREEN, BLUE);
         	leds[i-1] = c;
         	break;
 		}
@@ -95,7 +95,7 @@ void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
 		{
         	for(int iLocal=0; iLocal <= 8; iLocal++)
 			{
-          		CRGB c(BLUE, GREEN, RED);
+          		CRGB c(RED, GREEN, BLUE);
           		leds[iLocal] = c;
         	}
 
