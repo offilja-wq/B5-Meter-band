@@ -4,15 +4,21 @@
 #define NTC_SENSOR_PIN A0
 #define PRESSURE_SENSOR_PIN A1
 
+typedef struct //Data holders
+{
+    int16_t NTC_RAW_DATA;
+    int16_t PRESSURE_RAW_DATA;
+} InputData;
+
 typedef enum : uint8_t 
 {
     NTC_DEAD_HIGH,
     NTC_DANGEROUS,
     NTC_TOO_HIGH,
     NTC_NORMAL,
-    TOO_LOW,
-    NO_SKIN_CONTACT,
-    NO_REALISTIC_DATA
+    NTC_TOO_LOW,
+    NTC_NO_SKIN_CONTACT,
+    NTC_NO_REALISTIC_DATA
 } NTC_TYPE;
 
 typedef enum : uint8_t 

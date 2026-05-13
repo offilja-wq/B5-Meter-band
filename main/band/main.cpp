@@ -30,14 +30,16 @@
 
 
 
-#include "ESP32_NOW.h"
-#include "WiFi.h"
+#include <WiFi.h>
+#include <esp_wifi.h>
+#include "esp_now.h"
 
 #include <esp_mac.h>  // For the MAC2STR and MACSTR macros
 
 /* Definitions */
 
 #define ESPNOW_WIFI_CHANNEL 6
+#define WIFI_STA WIFI_MODE_STA
 
 /* Classes */
 
