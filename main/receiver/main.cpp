@@ -38,7 +38,8 @@ void setup()
 
 void loop()
 {
-	if (networkReceiver.handlePing(&pinoutReceiver)) {
+	if (networkReceiver.handlePing(&pinoutReceiver))
+	{
 		createPacket(PACKAGETYPE_CALL_ACKNOWLEDGE);
 	}
 }

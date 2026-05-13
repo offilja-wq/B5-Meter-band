@@ -13,7 +13,7 @@
 // 25 to 26 connected to nano 10 to 11
 // 27 connected to nano 12
 
-typedef enum : uint8_t 
+typedef enum : uint8_t
 {
     NTC_DEAD_HIGH,
     NTC_DANGEROUS,
@@ -24,7 +24,7 @@ typedef enum : uint8_t
     NTC_NO_REALISTIC_DATA
 } NTC_RESULT;
 
-typedef enum : uint8_t 
+typedef enum : uint8_t
 {
     PRESSURE_TOO_SLOW,
     PRESSURE_SLOW,

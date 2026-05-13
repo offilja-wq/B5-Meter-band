@@ -20,7 +20,7 @@ void setup()
 	// Stel de identiteit in
 	identityBand.type = IDENTITY_BAND;
 	pinoutBand.PIN_LED = PIN_LED_BAND;
-	
+
 	pinMode(NTC_SENSOR_PIN, INPUT);
 	pinMode(PRESSURE_SENSOR_PIN, INPUT);
 

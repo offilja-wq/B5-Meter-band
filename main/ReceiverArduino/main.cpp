@@ -8,19 +8,19 @@ void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE)
 {
   switch (i)
   {
-    case 1 ... 8:
-      CRGB c(BLUE, GREEN, RED);
-      leds[i-1] = c;
-      break;
-    case 100:
+  case 1 ... 8:
+    CRGB c(BLUE, GREEN, RED);
+    leds[i - 1] = c;
+    break;
+  case 100:
+  {
+    for (int iLocal = 0; iLocal <= 9; iLocal++)
     {
-      for(int iLocal = 0; iLocal <= 9; iLocal++)
-      {
-        CRGB c(BLUE, GREEN, RED);
-        leds[iLocal] = c;
-        break;
-      }
+      CRGB c(BLUE, GREEN, RED);
+      leds[iLocal] = c;
+      break;
     }
+  }
   }
   FastLED.show();
 }
@@ -33,25 +33,29 @@ void updateStrip(int state)
 
   float wave = (sin(now / 600.0f) + 1.0f) / 2.0f;
 
-  switch(state) {
-    case 0 :
-    {
-      for(int i = 0; i < NUM_LEDS; i++) { //normaal, groen wave
+  switch (state)
+  {
+  case 0:
+  {
+    for (int i = 0; i < NUM_LEDS; i++)
+    { // normaal, groen wave
       setStrip(i, 0, (wave * 20), 0);
-      }
     }
-    case 1 :
-    {
-      for(int i = 0; i < NUM_LEDS; i++) { //low/high, oranje wave
+  }
+  case 1:
+  {
+    for (int i = 0; i < NUM_LEDS; i++)
+    { // low/high, oranje wave
       setStrip(i, (wave * 70), (wave * 40), 0);
-      }
     }
-    case 2 :
-    {     
-      for(int i = 0; i < NUM_LEDS; i++) { //probleem, rood flashend
+  }
+  case 2:
+  {
+    for (int i = 0; i < NUM_LEDS; i++)
+    { // probleem, rood flashend
       setStrip(i, flash, 0, 0);
-      }
     }
+  }
   }
 }
 
@@ -85,58 +89,58 @@ void ontvangData()
 
 int getState()
 {
-    // STATUS 0 — alles normaal
-    if (data.Pressure_result   == PRESSURE_NORMAL ||
-        data.Ntc_result        == NTC_NORMAL ||
-        data.Heartbeat_result  == HEARTBEAT_NORMAL ||
-        data.Saturation_result == SATURATION_NORMAL)
-    {
-        return 0;
-    }
+  // STATUS 0 — alles normaal
+  if (data.Pressure_result == PRESSURE_NORMAL ||
+      data.Ntc_result == NTC_NORMAL ||
+      data.Heartbeat_result == HEARTBEAT_NORMAL ||
+      data.Saturation_result == SATURATION_NORMAL)
+  {
+    return 0;
+  }
 
-    // STATUS 1 — low/high
-    if (data.Pressure_result   == PRESSURE_SLOW ||
-        data.Pressure_result   == PRESSURE_FAST ||
-        data.Ntc_result        == NTC_TOO_LOW ||
-        data.Ntc_result        == NTC_TOO_HIGH ||
-        data.Heartbeat_result  == HEARTBEAT_LOW ||
-        data.Heartbeat_result  == HEARTBEAT_HIGH ||
-        data.Saturation_result == SATURATION_LOW ||
-        data.Saturation_result == SATURATION_HIGH)
-    {
-        return 1;
-    }
+  // STATUS 1 — low/high
+  if (data.Pressure_result == PRESSURE_SLOW ||
+      data.Pressure_result == PRESSURE_FAST ||
+      data.Ntc_result == NTC_TOO_LOW ||
+      data.Ntc_result == NTC_TOO_HIGH ||
+      data.Heartbeat_result == HEARTBEAT_LOW ||
+      data.Heartbeat_result == HEARTBEAT_HIGH ||
+      data.Saturation_result == SATURATION_LOW ||
+      data.Saturation_result == SATURATION_HIGH)
+  {
+    return 1;
+  }
 
-    // STATUS 2 — gevaarlijke waarden
-    if (data.Pressure_result   == PRESSURE_DEAD_FAST ||
-        data.Pressure_result   == PRESSURE_DEAD_SLOW ||
-        data.Ntc_result        == NTC_DANGEROUS ||
-        data.Ntc_result        == NTC_DEAD_HIGH ||
-        data.Heartbeat_result  == HEARTBEAT_DEAD_LOW ||
-        data.Heartbeat_result  == HEARTBEAT_PROBLEMATICALLY_LOW ||
-        data.Heartbeat_result  == HEARTBEAT_DEAD_HIGH ||
-        data.Heartbeat_result  == HEARTBEAT_PROBLEMATICALLY_HIGH ||
-        data.Saturation_result == SATURATION_TOO_LOW ||
-        data.Saturation_result == SATURATION_TOO_HIGH)
-    {
-        return 2;
-    }
+  // STATUS 2 — gevaarlijke waarden
+  if (data.Pressure_result == PRESSURE_DEAD_FAST ||
+      data.Pressure_result == PRESSURE_DEAD_SLOW ||
+      data.Ntc_result == NTC_DANGEROUS ||
+      data.Ntc_result == NTC_DEAD_HIGH ||
+      data.Heartbeat_result == HEARTBEAT_DEAD_LOW ||
+      data.Heartbeat_result == HEARTBEAT_PROBLEMATICALLY_LOW ||
+      data.Heartbeat_result == HEARTBEAT_DEAD_HIGH ||
+      data.Heartbeat_result == HEARTBEAT_PROBLEMATICALLY_HIGH ||
+      data.Saturation_result == SATURATION_TOO_LOW ||
+      data.Saturation_result == SATURATION_TOO_HIGH)
+  {
+    return 2;
+  }
 
-    // STATUS 3 — geen realistische data
-    if (data.Pressure_result   == PRESSURE_NO_REALISTIC_DATA ||
-        data.Ntc_result        == NTC_NO_REALISTIC_DATA ||
-        data.Ntc_result        == NTC_NO_SKIN_CONTACT ||
-        data.Heartbeat_result  == HEARTBEAT_NO_SKIN_CONTACT ||
-        data.Heartbeat_result  == HEARTBEAT_NO_REALISTIC_DATA ||
-        data.Saturation_result == SATURATION_NO_REALISTIC_DATA ||
-        data.Saturation_result == SATURATION_NO_SKIN_CONTACT)
-    {
-        return 3;
-    }
+  // STATUS 3 — geen realistische data
+  if (data.Pressure_result == PRESSURE_NO_REALISTIC_DATA ||
+      data.Ntc_result == NTC_NO_REALISTIC_DATA ||
+      data.Ntc_result == NTC_NO_SKIN_CONTACT ||
+      data.Heartbeat_result == HEARTBEAT_NO_SKIN_CONTACT ||
+      data.Heartbeat_result == HEARTBEAT_NO_REALISTIC_DATA ||
+      data.Saturation_result == SATURATION_NO_REALISTIC_DATA ||
+      data.Saturation_result == SATURATION_NO_SKIN_CONTACT)
+  {
+    return 3;
+  }
 }
 
 // Update blokken
-void updateBlokken() 
+void updateBlokken()
 {
   tft.setTextColor(LICHTROZE);
   tft.setTextSize(2);
@@ -180,14 +184,14 @@ void updateBlokken()
 }
 
 // Raster
-void tekenRaster() 
+void tekenRaster()
 {
-  for (int i = 1; i < 5; i++) 
+  for (int i = 1; i < 5; i++)
   {
     int y = GRAFIEK_Y + (GRAFIEK_H / 5) * i;
     tft.drawFastHLine(GRAFIEK_X, y, GRAFIEK_B, GRIJS);
   }
-  for (int i = 1; i < 4; i++) 
+  for (int i = 1; i < 4; i++)
   {
     int x = GRAFIEK_X + (GRAFIEK_B / 4) * i;
     tft.drawFastVLine(x, GRAFIEK_Y, GRAFIEK_H, GRIJS);
@@ -195,10 +199,10 @@ void tekenRaster()
 }
 
 // Grafiek
-void tekenGrafiekOutline() 
+void tekenGrafiekOutline()
 {
   tft.fillRect(0, 0, 182, SCHERM_H, LICHTROZE);
-  
+
   tekenRaster();
 
   // Grafiek kader
@@ -207,7 +211,7 @@ void tekenGrafiekOutline()
   // Y-as labels
   tft.setTextColor(ZWART);
   tft.setTextSize(1);
-  for (int i = 0; i <= 5; i++) 
+  for (int i = 0; i <= 5; i++)
   {
     int y = GRAFIEK_Y + (GRAFIEK_H / 5) * i;
     int waarde = 100 - (i * 20);
@@ -216,16 +220,16 @@ void tekenGrafiekOutline()
   }
 
   // X-as labels
-  tft.setCursor(GRAFIEK_X - 2, GRAFIEK_Y + GRAFIEK_H + 6); 
+  tft.setCursor(GRAFIEK_X - 2, GRAFIEK_Y + GRAFIEK_H + 6);
   tft.print("0");
-  tft.setCursor(GRAFIEK_X + 32, GRAFIEK_Y + GRAFIEK_H + 6); 
+  tft.setCursor(GRAFIEK_X + 32, GRAFIEK_Y + GRAFIEK_H + 6);
   tft.print("tijd in sec");
-  tft.setCursor(GRAFIEK_X + GRAFIEK_B - 6, GRAFIEK_Y + GRAFIEK_H + 6); 
+  tft.setCursor(GRAFIEK_X + GRAFIEK_B - 6, GRAFIEK_Y + GRAFIEK_H + 6);
   tft.print("10");
 
   // Titel
   tft.setTextColor(ROZE);
-  tft.setCursor(GRAFIEK_X + 34, 8); 
+  tft.setCursor(GRAFIEK_X + 34, 8);
   tft.print("Ademhaling");
 
   // Scheidingslijn
@@ -233,11 +237,11 @@ void tekenGrafiekOutline()
 }
 
 // Rechterkant
-void tekenRechterkant() 
+void tekenRechterkant()
 {
   tft.setTextColor(ROZE);
   tft.setTextSize(1);
-  tft.setCursor(193, 8);    
+  tft.setCursor(193, 8);
   tft.print("EXTRA INFO -");
 
   tft.drawRect(190, 20, 105, 41, GRIJS);
@@ -245,30 +249,30 @@ void tekenRechterkant()
   tft.drawRect(190, 126, 105, 41, GRIJS);
   tft.drawRect(190, 179, 105, 41, GRIJS);
 
-  tft.setCursor(193, 25);   
+  tft.setCursor(193, 25);
   tft.print("Hartslag:");
-  tft.setCursor(193, 78);   
+  tft.setCursor(193, 78);
   tft.print("Saturatie:");
-  tft.setCursor(193, 131);  
+  tft.setCursor(193, 131);
   tft.print("Temperatuur:");
-  tft.setCursor(193, 184); 
+  tft.setCursor(193, 184);
   tft.print("Ademhaling:");
 
   // Eenheden, om flikkeringen te verminderen
   tft.setTextColor(LICHTROZE);
   tft.setTextSize(2);
 
-  tft.setCursor(244, 40);   
+  tft.setCursor(244, 40);
   tft.print("BPM");
-  tft.setCursor(244, 93);   
+  tft.setCursor(244, 93);
   tft.print("%");
-  tft.setCursor(244, 146);  
+  tft.setCursor(244, 146);
   tft.print("C");
-  tft.setCursor(244, 199);  
+  tft.setCursor(244, 199);
   tft.print("B/M");
 }
 
-void setup() 
+void setup()
 {
   Serial.begin(115200);
   mySerial.begin(9600); // 9600, kut met 115200
@@ -278,8 +282,9 @@ void setup()
   uint16_t ID = tft.readID();
   // Serial.print("Scherm ID: 0x");
   // Serial.println(ID, HEX);
-  
-  if (ID == 0xD3D3) ID = 0x9486;
+
+  if (ID == 0xD3D3)
+    ID = 0x9486;
   tft.begin(ID);
   tft.setRotation(1);
   tft.fillScreen(ZWART);
@@ -288,11 +293,11 @@ void setup()
   tekenRechterkant();
 
   // Startpositie sinus
-  sinusX  = GRAFIEK_X + 1;
+  sinusX = GRAFIEK_X + 1;
   vorigeY = GRAFIEK_Y + (GRAFIEK_H / 2);
 }
 
-void loop() 
+void loop()
 {
   ontvangData();
   updateStrip(getState());
@@ -311,9 +316,9 @@ void loop()
   sinusX++;
 
   // Reset als einde grafiek bereikt
-  if (sinusX > GRAFIEK_X + GRAFIEK_B - 1) 
+  if (sinusX > GRAFIEK_X + GRAFIEK_B - 1)
   {
-    sinusX  = GRAFIEK_X + 1;
+    sinusX = GRAFIEK_X + 1;
 
     tft.fillRect(GRAFIEK_X + 1, GRAFIEK_Y + 1, GRAFIEK_B - 2, GRAFIEK_H - 2, LICHTROZE);
     tekenRaster();

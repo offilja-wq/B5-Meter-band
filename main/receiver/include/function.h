@@ -5,11 +5,11 @@
 #include "config.h"
 #include "Networking_by_B5.h"
 
-//function prototypes
+// function prototypes
 
 SENSORS concludeSensors(InputData *input);
 
-//RECIEVE
+// RECIEVE
 void printInput(const InputData *input);
 
 void handleResponseReceiver(InputData *input);

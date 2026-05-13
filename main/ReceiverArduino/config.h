@@ -10,7 +10,7 @@
 #define PIN_DATA 13
 #define NUM_LEDS 10
 
-typedef enum : uint8_t 
+typedef enum : uint8_t
 {
   NTC_DEAD_HIGH,
   NTC_DANGEROUS,
@@ -82,28 +82,28 @@ SoftwareSerial mySerial(12, 11); // RX, TX
 MCUFRIEND_kbv tft;
 
 // Kleuren
-#define ZWART     0x0000
-#define WIT       0xFFFF
-#define ROOD      0xF800
-#define GROEN     0x07E0
-#define BLAUW     0x001F
-#define GRIJS     0x8410
-#define DGGRIJS   0x2104
-#define ROZE      0xF813
+#define ZWART 0x0000
+#define WIT 0xFFFF
+#define ROOD 0xF800
+#define GROEN 0x07E0
+#define BLAUW 0x001F
+#define GRIJS 0x8410
+#define DGGRIJS 0x2104
+#define ROZE 0xF813
 #define LICHTROZE 0xFF18
 
 // Grafiek instellingen
-#define GRAFIEK_X   35
-#define GRAFIEK_Y   20
-#define GRAFIEK_B   130
-#define GRAFIEK_H   200
+#define GRAFIEK_X 35
+#define GRAFIEK_Y 20
+#define GRAFIEK_B 130
+#define GRAFIEK_H 200
 
-#define SCHERM_B    240
-#define SCHERM_H    320
+#define SCHERM_B 240
+#define SCHERM_H 320
 
 // Sinus variabelen
-int sinusX   = 0;
-int vorigeY  = 0;
+int sinusX = 0;
+int vorigeY = 0;
 
 // UART buffer
 bool receiving = false;

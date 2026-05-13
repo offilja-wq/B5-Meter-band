@@ -5,7 +5,7 @@
 #include "config.h"
 #include "Networking_by_B5.h"
 
-//function prototypes
+// function prototypes
 
 extern CRGB leds[NUM_LEDS];
 
@@ -27,7 +27,7 @@ void setStrip(int i, uint8_t RED, uint8_t GREEN, uint8_t BLUE);
 
 void updateStrip(InputData *input);
 
-//RECIEVE
+// RECIEVE
 void handleResponseBand(InputData *input);
 
 void createPacket(PACKAGETYPECODE type);

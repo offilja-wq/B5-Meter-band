@@ -19,8 +19,8 @@
 #define PRESSURE_SENSOR_PIN 33
 
 // ledstrip
-#define NUM_LEDS  8
-#define DATA_PIN  25 // DI verander naar goeie pin
+#define NUM_LEDS 8
+#define DATA_PIN 25  // DI verander naar goeie pin
 #define CLOCK_PIN 26 // CI verander naar goeie pin
 
 // MAX30105
@@ -33,17 +33,17 @@
 
 typedef struct
 {
-    const byte RATE_SIZE = 4; //Increase this for more averaging. 4 is good.
-    byte rates[4]; //Array of heart rates
+    const byte RATE_SIZE = 4; // Increase this for more averaging. 4 is good.
+    byte rates[4];            // Array of heart rates
     byte rateSpot = 0;
-    long lastBeat = 0; //Time at which the last beat occurred
+    long lastBeat = 0; // Time at which the last beat occurred
 
     float beatsPerMinute;
     int beatAvg;
     int redLed;
 } SRC_SENSORS;
 
-typedef enum : uint8_t 
+typedef enum : uint8_t
 {
     NTC_DEAD_HIGH,
     NTC_DANGEROUS,
